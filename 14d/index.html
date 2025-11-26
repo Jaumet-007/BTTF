@@ -155,6 +155,85 @@
       }
     }
 
+    /* Contador de tiempo */
+    #countdown {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10001;
+      font-family: 'Orbitron', monospace;
+      font-size: 120px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 
+        0 0 20px rgba(255,215,0,1),
+        0 0 40px rgba(255,102,0,1),
+        0 0 60px rgba(255,102,0,0.8);
+      animation: countPulse 1s ease-in-out infinite;
+    }
+
+    #countdown.show {
+      display: block;
+    }
+
+    @keyframes countPulse {
+      0%, 100% { 
+        transform: translate(-50%, -50%) scale(1);
+        text-shadow: 
+          0 0 20px rgba(255,215,0,1),
+          0 0 40px rgba(255,102,0,1),
+          0 0 60px rgba(255,102,0,0.8);
+      }
+      50% { 
+        transform: translate(-50%, -50%) scale(1.1);
+        text-shadow: 
+          0 0 30px rgba(255,215,0,1),
+          0 0 60px rgba(255,102,0,1),
+          0 0 90px rgba(255,102,0,1);
+      }
+    }
+
+    @media (max-width: 768px) {
+      #countdown {
+        font-size: 80px;
+      }
+    }
+
+    /* Modal de video */
+    #videoModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #videoModal.show {
+      display: flex;
+    }
+
+    #videoContainer {
+      position: relative;
+      width: 90%;
+      max-width: 800px;
+      aspect-ratio: 16/9;
+    }
+
+    #videoContainer iframe {
+      width: 100%;
+      height: 100%;
+      border: 4px solid #ff6600;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(255,102,0,0.8);
+    }
+
       /* Resplandor retro-futurista — versión más intensa */
     .btf-glow {
       position: fixed;
@@ -512,6 +591,9 @@
   <!-- Botón de inicio -->
   <button id="startBtn">COMENÇAR!</button>
 
+  <!-- Contador -->
+  <div id="countdown"></div>
+
   <!-- Contenido principal oculto inicialmente -->
   <div id="mainContent">
   <!-- Efecto: resplandor azul rojizo tipo "time travel" -->
@@ -584,11 +666,18 @@
     <br><br>
     
     <!-- Botón DeLorean -->
-    <a href="180kmh/2_botones.html" class="delorean-btn">
+    <a href="#" id="deloreanBtn" class="delorean-btn">
       🚗 Saltar al DeLorean 💨
     </a>
   </div>
   </div> <!-- Cierre de mainContent -->
+
+  <!-- Modal de video -->
+  <div id="videoModal">
+    <div id="videoContainer">
+      <iframe id="youtubePlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
 
   <script>
     // Manejar el botón de inicio
@@ -603,6 +692,30 @@
       audio.play().then(() => {
         fadeIn();
       }).catch(err => console.log('Error al reproducir:', err));
+    });
+
+    // Manejar el botón del DeLorean
+    document.getElementById('deloreanBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Abrir el video en una nueva pestaña
+      window.open('https://youtu.be/obdZLT5GmJs', '_blank');
+      
+      // Mostrar y empezar contador
+      const countdownEl = document.getElementById('countdown');
+      countdownEl.classList.add('show');
+      let timeLeft = 60;
+      countdownEl.textContent = timeLeft;
+      
+      const countdownInterval = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          window.location.href = '180kmh/2_botones.html';
+        }
+      }, 1000);
     });
   </script>
 </body>
