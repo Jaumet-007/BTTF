@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Back to the Future — Fondo</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+    }
+    body {
+      background-image: url('iPhone-wallpaper-back-to-the-future.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: bottom center;
+      background-attachment: fixed;
+    }
+
+    /* Botón DeLorean */
+    .delorean-btn {
+      position: relative;
+      display: inline-block;
+      margin-top: 20px;
+      z-index: 9999;
+      
+      padding: 18px 40px;
+      font-family: 'Orbitron', monospace;
+      font-size: 20px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #000;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+      border: 3px solid #ff6600;
+      border-radius: 8px;
+      box-shadow: 
+        0 0 20px rgba(255,102,0,0.8),
+        0 0 40px rgba(255,215,0,0.6),
+        inset 0 2px 4px rgba(255,255,255,0.4),
+        inset 0 -2px 4px rgba(0,0,0,0.3);
+      
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      
+      animation: buttonPulse 2s ease-in-out infinite;
+    }
+
+    .delorean-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 
+        0 0 30px rgba(255,102,0,1),
+        0 0 60px rgba(255,215,0,0.9),
+        inset 0 2px 4px rgba(255,255,255,0.6),
+        inset 0 -2px 4px rgba(0,0,0,0.3);
+      background: linear-gradient(135deg, #ffed4e 0%, #ffd700 50%, #ffed4e 100%);
+    }
+
+    .delorean-btn:active {
+      transform: scale(0.95);
+      box-shadow: 
+        0 0 15px rgba(255,102,0,0.6),
+        inset 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    @keyframes buttonPulse {
+      0%, 100% { 
+        box-shadow: 
+          0 0 20px rgba(255,102,0,0.8),
+          0 0 40px rgba(255,215,0,0.6),
+          inset 0 2px 4px rgba(255,255,255,0.4);
+      }
+      50% { 
+        box-shadow: 
+          0 0 30px rgba(255,102,0,1),
+          0 0 60px rgba(255,215,0,0.9),
+          inset 0 2px 4px rgba(255,255,255,0.6);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .delorean-btn {
+        font-size: 16px;
+        padding: 14px 28px;
+      }
+    }
+
+      /* Resplandor retro-futurista — versión más intensa */
+    .btf-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center,
+        rgba(255,120,0,0.55) 0%,
+        rgba(255,0,80,0.50) 30%,
+        rgba(0,200,255,0.45) 60%,
+        rgba(0,0,0,0) 80%
+      );
+      mix-blend-mode: screen;
+      animation: glowPulse 4s ease-in-out infinite;
+      opacity: 0.9;
+      filter: blur(2px);
+    }
+    @keyframes glowPulse {
+      0%,100% { opacity: 0.75; }
+      50% { opacity: 1; }
+    }
+
+    /* Rejilla neon "synthwave" — más brillante y visible */
+    .btf-grid {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50vh;
+      pointer-events: none;
+      background-image:
+        linear-gradient(0deg, rgba(0,255,255,0.6) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(255,0,200,0.6) 2px, transparent 2px);
+      background-size: 45px 45px;
+      transform: perspective(800px) rotateX(70deg);
+      opacity: 0.9;
+      mix-blend-mode: screen;
+      animation: gridGlow 6s linear infinite alternate;
+      filter: blur(0.4px);
+    }
+    @keyframes gridGlow {
+      0% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    /* Chispas más visibles */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle,
+        rgba(0,180,255,0.45) 0%,
+        rgba(0,0,0,0) 60%
+      );
+      mix-blend-mode: screen;
+      animation: sparks 2.8s infinite ease-in-out;
+      opacity: 0.8;
+    }
+    @keyframes sparks {
+      0%,100% { opacity: 0.6; filter: blur(8px); }
+      50% { opacity: 1; filter: blur(14px); }
+    }
+    @keyframes glowPulse {
+      0%,100% { opacity: 0.35; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Rejilla neon "synthwave" */
+    .btf-grid {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 45vh;
+      pointer-events: none;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px);
+      background-size: 55px 55px;
+      transform: perspective(900px) rotateX(65deg);
+      opacity: 0.45;
+      mix-blend-mode: screen;
+      animation: gridGlow 10s linear infinite alternate;
+      filter: blur(0.6px);
+    }
+    @keyframes gridGlow {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.6; }
+    }
+
+    /* Pequeñas chispas azules simulando energía del Delorean */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, rgba(0,200,255,0.17) 0%, rgba(0,0,0,0) 65%);
+      mix-blend-mode: screen;
+      animation: sparks 4s infinite ease-in-out;
+    }
+    @keyframes sparks {
+      0%,100% { opacity: 0.25; filter: blur(10px); }
+      50% { opacity: 0.55; filter: blur(14px); }
+    }
+
+    /* Rayo animado intenso */
+    .btf-lightning {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,200,255,0) 0%,
+        rgba(0,200,255,0) 20%,
+        rgba(0,200,255,1) 45%,
+        rgba(255,255,255,1) 50%,
+        rgba(0,200,255,1) 55%,
+        rgba(0,200,255,0) 80%,
+        rgba(0,200,255,0) 100%
+      );
+      transform: translateX(-50%);
+      filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      animation: lightningFlash 6s infinite;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes lightningFlash {
+      0%, 92%, 100% { opacity: 0; }
+      93% { opacity: 1; height: 80%; }
+      94% { opacity: 0.6; height: 100%; }
+      95% { opacity: 1; height: 60%; }
+    }
+  /* Ondas de choque circulares */
+    .btf-shockwave {
+      position: fixed;
+      top: 50%; left: 50%;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 4px solid rgba(0,200,255,0.8);
+      transform: translate(-50%, -50%);
+      animation: shock 3s infinite;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+    @keyframes shock {
+      0% { width: 20px; height: 20px; opacity: 1; }
+      100% { width: 900px; height: 900px; opacity: 0; }
+    }
+
+    /* Fuego temporal en el suelo */
+    .btf-fire {
+      position: fixed;
+      bottom: 0; left: 50%;
+      width: 80%; height: 120px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle,
+        rgba(255,120,0,0.8) 0%,
+        rgba(255,30,0,0.7) 40%,
+        rgba(255,255,0,0.4) 60%,
+        rgba(0,0,0,0) 100%
+      );
+      mix-blend-mode: screen;
+      filter: blur(12px);
+      animation: firePulse 2.5s infinite ease-in-out;
+      pointer-events: none;
+    }
+    @keyframes firePulse {
+      0%,100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    /* Estelas del DeLorean */
+    .btf-trails {
+      position: fixed;
+      bottom: 0; left: 50%;
+      width: 70%; height: 3px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg,
+        rgba(255,80,0,1), rgba(255,200,0,1), rgba(255,80,0,1)
+      );
+      filter: blur(4px);
+      animation: trailsFlash 1.2s infinite;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+    @keyframes trailsFlash {
+      0%,100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+
+    /* Partículas energéticas */
+    .btf-particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle,
+        rgba(0,200,255,0.5) 2px,
+        rgba(0,0,0,0) 3px
+      );
+      background-size: 120px 120px;
+      animation: particlesMove 8s linear infinite;
+      mix-blend-mode: screen;
+      opacity: 0.6;
+    }
+    @keyframes particlesMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 200px 400px; }
+    }
+
+    /* Distorsión temporal */
+    .btf-warp {
+      position: fixed;
+      top: 50%; left: 50%;
+      width: 300px; height: 300px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        rgba(255,255,255,0.9) 0%,
+        rgba(0,200,255,0.5) 40%,
+        rgba(0,0,0,0) 80%
+      );
+      filter: blur(22px);
+      opacity: 0.5;
+      animation: warpPulse 3.5s infinite ease-in-out;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+    @keyframes warpPulse {
+      0%,100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+      50% { transform: translate(-50%, -50%) scale(1.35); opacity: 0.9; }
+    }
+
+@media (max-width: 768px) {
+      /* MODO ULTRA-EFECTISTA PARA MÓVIL */
+
+      /* Fondo más oscuro para resaltar efectos */
+      body {
+        background-size: contain;
+        background-position: center bottom;
+        background-attachment: scroll;
+        filter: brightness(0.75) contrast(1.2);
+      }
+
+      /* Rejilla enorme, más brillante y animada más rápido */
+      .btf-grid {
+        height: 55vh;
+        background-size: 28px 28px;
+        opacity: 0.9 !important;
+        transform: perspective(500px) rotateX(72deg);
+        animation: gridGlow 4s linear infinite alternate !important;
+      }
+
+      /* Rayo más grueso y con vibración */
+      .btf-lightning {
+        width: 6px;
+        filter: blur(3px);
+        animation: lightningFlash 3s infinite;
+      }
+
+      /* Shockwave gigante y más rápida */
+      .btf-shockwave {
+        width: 20px; height: 20px;
+        border-width: 6px;
+        animation: shockMobile 2s infinite;
+      }
+      @keyframes shockMobile {
+        0% { width: 20px; height: 20px; opacity: 1; }
+        100% { width: 850px; height: 850px; opacity: 0; }
+      }
+
+      /* Fuego muy luminoso y pulsante */
+      .btf-fire {
+        height: 120px;
+        filter: blur(14px);
+        animation: firePulse 1.8s infinite;
+        opacity: 1;
+      }
+
+      /* Estelas más gruesas y brillantes */
+      .btf-trails {
+        height: 4px;
+        filter: blur(5px);
+        animation: trailsFlash 0.8s infinite;
+      }
+
+      /* Partículas más densas y moviéndose más deprisa */
+      .btf-particles {
+        background-size: 60px 60px;
+        animation: particlesMove 4s linear infinite;
+        opacity: 0.9;
+      }
+
+      /* Distorsión temporal más grande, más luz */
+      .btf-warp {
+        width: 280px;
+        height: 280px;
+        opacity: 0.7;
+        filter: blur(26px);
+        animation: warpPulse 2.2s infinite;
+      }
+
+      /* Glow más fuerte */
+      .btf-glow {
+        opacity: 1;
+        filter: blur(6px);
+        animation: glowPulse 2s alternate infinite;
+      }
+    }
+      body {
+        background-size: contain;
+        background-position: center bottom;
+        background-attachment: scroll;
+      }
+      .btf-grid {
+        height: 35vh;
+        background-size: 35px 35px;
+        transform: perspective(600px) rotateX(60deg);
+      }
+      .btf-lightning {
+        width: 3px;
+        filter: blur(1.5px);
+      }
+      .btf-shockwave {
+        width: 10px; height: 10px;
+      }
+      @keyframes shock {
+        0% { width: 10px; height: 10px; opacity: 1; }
+        100% { width: 500px; height: 500px; opacity: 0; }
+      }
+      .btf-fire {
+        height: 80px;
+        filter: blur(10px);
+      }
+      .btf-trails {
+        width: 80%; height: 2px;
+      }
+      .btf-warp {
+        width: 200px; height: 200px;
+        filter: blur(16px);
+      }
+      .btf-particles {
+        background-size: 80px 80px;
+      }
+    }
+</style>
+</head>
+<body>
+  <!-- Efecto: resplandor azul rojizo tipo "time travel" -->
+  <div class="btf-glow"></div>
+
+  <!-- Efecto: rejilla futurista tipo suelo de los 80 -->
+  <div class="btf-grid"></div>
+  <!-- Rayo animado estilo torre del reloj -->
+  <div class="btf-lightning"></div>
+  <div class="btf-shockwave"></div>
+  <div class="btf-fire"></div>
+  <div class="btf-trails"></div>
+  <div class="btf-particles"></div>
+  <div class="btf-warp"></div>
+  <!-- Audio Back to the Future con fade-out -->
+  <audio id="themeAudio" src="theme.mp3" preload="auto"></audio>
+  <script>
+    const audio = document.getElementById('themeAudio');
+    audio.volume = 0;
+
+    // Iniciar solo tras interacción (iOS/Android/Chrome)
+    function startAudio() {
+      audio.play().then(() => {
+        fadeIn();
+      }).catch(err => console.log('Error al reproducir:', err));
+    }
+
+    document.addEventListener('click', startAudio, { once: true });
+    document.addEventListener('touchstart', startAudio, { once: true });
+
+    // --- FADE IN ---
+    function fadeIn() {
+      let v = 0;
+      const steps = 40;
+      const interval = 2500 / steps;
+      const fade = setInterval(() => {
+        v += 1 / steps;
+        if (v >= 1) {
+          audio.volume = 1;
+          clearInterval(fade);
+          setTimeout(fadeOut, 1500); // deja sonar antes del fade out
+        } else {
+          audio.volume = v;
+        }
+      }, interval);
+    }
+
+    // --- FADE OUT ---
+    function fadeOut() {
+      let v = 1;
+      const steps = 50;
+      const interval = 7000 / steps;
+      const fade = setInterval(() => {
+        v -= 1 / steps;
+        if (v <= 0) {
+          audio.volume = 0;
+          clearInterval(fade);
+          audio.pause();
+        } else {
+          audio.volume = v;
+        }
+      }, interval);
+    }
+  </script>
+  
+  <div id="intro-text" style="position: absolute; top: 10%; width: 100%; text-align: center; color: #fff; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; line-height: 1.6; text-shadow: 0 0 8px #f80, 0 0 12px #f40; padding: 0 20px;">
+    <p>Benvinguts a l'aventura de Back To The Future.<br>
+    Avui sereu vosaltres els protagonistes.<br>
+    Enlloc de "Hill Valley" viatjareu per "Hill Badaloney".
+    <p>El primer! Munteu al Delorian! <br>
+    perquè heu de fer-lo arribar a <strong>180km/h.</strong><br>
+    Llavors ...Saltareu en el temps!!!</p>
+
+    <p> </p>
+    <p>Premeu els botons alternativament fins a 180km/h<br>
+    feu-ho molt molt de pressa o no ho aconseguireu!</p>
+    </p>
+    <p>Si arribeu a 180km/h .. Quelcom passarà!</p>
+    <p><strong>Sort.</strong></p>
+    <br><br>
+    
+    <!-- Botón DeLorean -->
+    <a href="180kmh/2_botones.html" class="delorean-btn">
+      🚗 Saltar al DeLorean 💨
+    </a>
+  </div>
+</body>
+</html>
