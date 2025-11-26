@@ -451,20 +451,27 @@
   <div class="btf-particles"></div>
   <div class="btf-warp"></div>
   <!-- Audio Back to the Future con fade-out -->
-  <audio id="themeAudio" src="theme.mp3" preload="auto"></audio>
+  <audio id="themeAudio" src="theme.mp3" preload="auto" autoplay></audio>
   <script>
     const audio = document.getElementById('themeAudio');
     audio.volume = 0;
 
-    // Iniciar solo tras interacción (iOS/Android/Chrome)
-    function startAudio() {
+    // Intentar reproducir automáticamente al cargar
+    window.addEventListener('load', () => {
       audio.play().then(() => {
         fadeIn();
-      }).catch(err => console.log('Error al reproducir:', err));
-    }
-
-    document.addEventListener('click', startAudio, { once: true });
-    document.addEventListener('touchstart', startAudio, { once: true });
+      }).catch(err => {
+        console.log('Autoplay bloqueado, esperando interacción:', err);
+        // Si el autoplay falla, esperar interacción del usuario
+        function startAudio() {
+          audio.play().then(() => {
+            fadeIn();
+          }).catch(err => console.log('Error al reproducir:', err));
+        }
+        document.addEventListener('click', startAudio, { once: true });
+        document.addEventListener('touchstart', startAudio, { once: true });
+      });
+    });
 
     // --- FADE IN ---
     function fadeIn() {
