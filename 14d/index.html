@@ -86,6 +86,75 @@
       }
     }
 
+    /* Botón de inicio */
+    #startBtn {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10000;
+      padding: 25px 60px;
+      font-family: 'Orbitron', monospace;
+      font-size: 32px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #000;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+      border: 4px solid #ff6600;
+      border-radius: 12px;
+      box-shadow: 
+        0 0 30px rgba(255,102,0,1),
+        0 0 60px rgba(255,215,0,0.8),
+        inset 0 3px 6px rgba(255,255,255,0.5),
+        inset 0 -3px 6px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: startPulse 1.5s ease-in-out infinite;
+    }
+
+    #startBtn:hover {
+      transform: translate(-50%, -50%) scale(1.15);
+      box-shadow: 
+        0 0 40px rgba(255,102,0,1),
+        0 0 80px rgba(255,215,0,1),
+        inset 0 3px 6px rgba(255,255,255,0.7);
+      background: linear-gradient(135deg, #ffed4e 0%, #ffd700 50%, #ffed4e 100%);
+    }
+
+    @keyframes startPulse {
+      0%, 100% { 
+        box-shadow: 
+          0 0 30px rgba(255,102,0,1),
+          0 0 60px rgba(255,215,0,0.8),
+          inset 0 3px 6px rgba(255,255,255,0.5);
+      }
+      50% { 
+        box-shadow: 
+          0 0 45px rgba(255,102,0,1),
+          0 0 90px rgba(255,215,0,1),
+          inset 0 3px 6px rgba(255,255,255,0.7);
+      }
+    }
+
+    /* Ocultar contenido inicialmente */
+    #mainContent {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s ease-in;
+    }
+
+    #mainContent.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 768px) {
+      #startBtn {
+        font-size: 24px;
+        padding: 20px 45px;
+      }
+    }
+
       /* Resplandor retro-futurista — versión más intensa */
     .btf-glow {
       position: fixed;
@@ -399,6 +468,8 @@
         animation: glowPulse 2s alternate infinite;
       }
     }
+
+    @media (max-width: 768px) {
       body {
         background-size: contain;
         background-position: center bottom;
@@ -438,6 +509,11 @@
 </style>
 </head>
 <body>
+  <!-- Botón de inicio -->
+  <button id="startBtn">COMENÇAR!</button>
+
+  <!-- Contenido principal oculto inicialmente -->
+  <div id="mainContent">
   <!-- Efecto: resplandor azul rojizo tipo "time travel" -->
   <div class="btf-glow"></div>
 
@@ -451,27 +527,10 @@
   <div class="btf-particles"></div>
   <div class="btf-warp"></div>
   <!-- Audio Back to the Future con fade-out -->
-  <audio id="themeAudio" src="theme.mp3" preload="auto" autoplay></audio>
+  <audio id="themeAudio" src="theme.mp3" preload="auto"></audio>
   <script>
     const audio = document.getElementById('themeAudio');
     audio.volume = 0;
-
-    // Intentar reproducir automáticamente al cargar
-    window.addEventListener('load', () => {
-      audio.play().then(() => {
-        fadeIn();
-      }).catch(err => {
-        console.log('Autoplay bloqueado, esperando interacción:', err);
-        // Si el autoplay falla, esperar interacción del usuario
-        function startAudio() {
-          audio.play().then(() => {
-            fadeIn();
-          }).catch(err => console.log('Error al reproducir:', err));
-        }
-        document.addEventListener('click', startAudio, { once: true });
-        document.addEventListener('touchstart', startAudio, { once: true });
-      });
-    });
 
     // --- FADE IN ---
     function fadeIn() {
@@ -529,5 +588,22 @@
       🚗 Saltar al DeLorean 💨
     </a>
   </div>
+  </div> <!-- Cierre de mainContent -->
+
+  <script>
+    // Manejar el botón de inicio
+    document.getElementById('startBtn').addEventListener('click', function() {
+      // Ocultar el botón
+      this.style.display = 'none';
+      
+      // Mostrar el contenido principal
+      document.getElementById('mainContent').classList.add('show');
+      
+      // Iniciar el audio
+      audio.play().then(() => {
+        fadeIn();
+      }).catch(err => console.log('Error al reproducir:', err));
+    });
+  </script>
 </body>
 </html>
