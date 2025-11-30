@@ -102,7 +102,7 @@
         const userPassword = prompt('Introdueix la contrasenya:');
         if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
           // By default, redirect to decoded path
-          window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','ZmFzc3NzZTQuaHRtbA==','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
+          window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','bG92ZS9mYXNzc3NlNC5odG1s','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
         } else if (userPassword) {
           alert('Contrasenya incorrecta!');
         }

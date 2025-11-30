@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tutu — plantilla común</title>
+  <style>
+    /* ------------------------------
+       Esta plantilla contiene la parte COMÚN
+       usada por index.html y sandman/ffase2.html
+       Coloca tu contenido específico en el <main id="pageContent"> ... </main>
+       ------------------------------ */
+
+    html, body { margin: 0; height: 100%; }
+
+    body {
+      /* file located in parent folder */
+      background-image: url('../iPhone-wallpaper-back-to-the-future.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: bottom center;
+      background-attachment: fixed;
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    /* Shared UI pieces */
+    #startBtn {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 10000; padding: 25px 60px; font-family: 'Orbitron', monospace;
+      font-size: 32px; font-weight: 900; text-transform: uppercase; color: #000;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+      border: 4px solid #ff6600; border-radius: 12px; cursor: pointer;
+      box-shadow: 0 0 30px rgba(255,102,0,0.9), 0 0 60px rgba(255,215,0,0.7);
+    }
+
+    #countdown {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      z-index: 10001; font-family: 'Orbitron', monospace; font-size: 120px; font-weight:900; color:#ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,102,0,1);
+    }
+
+    #countdown.show { display:block; }
+
+    #phaseLinks{
+      position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+      z-index: 10000; display:flex; gap:15px; padding:10px 20px;
+      background: rgba(11,18,33,0.8); border-radius:20px; border:2px solid rgba(255,102,0,0.5);
+    }
+
+    .phase-link{ font-family:'Orbitron', monospace; font-weight:700; color:#ffd700; padding:8px 15px; background: rgba(255,215,0,0.08); border-radius:8px; text-decoration:none; }
+
+    /* Visual effects shared between pages */
+    .btf-glow{ position:fixed; inset:0; pointer-events:none; background: radial-gradient(circle at center, rgba(255,120,0,0.55) 0%, rgba(255,0,80,0.5) 30%, rgba(0,200,255,0.45) 60%, rgba(0,0,0,0) 80%); mix-blend-mode:screen; animation: glowPulse 4s ease-in-out infinite; filter: blur(2px); }
+    @keyframes glowPulse{ 0%,100%{opacity:.75} 50%{opacity:1} }
+
+    .btf-grid{ position:fixed; bottom:0; left:0; width:100%; height:45vh; pointer-events:none; background-image: linear-gradient(0deg, rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px); background-size:55px 55px; transform:perspective(900px) rotateX(65deg); opacity:0.45; mix-blend-mode:screen; }
+
+    /* small helpers so template pages look consistent */
+    main#pageContent{ position:relative; z-index:10; width:100%; max-width:1100px; margin: 20px auto; padding: 20px; box-sizing:border-box; }
+
+    /* Per-page presentation: instructions and embedded frame */
+    /* make the instruction box smaller so it fits the background frame */
+    .instructions { color: #fff; background: rgba(11,18,33,0.35); padding: 12px 14px; border-radius: 10px; border: 2px solid rgba(255,102,0,0.18); box-shadow: 0 8px 36px rgba(0,0,0,0.45); text-align:left; line-height:1.4; font-size:14px; max-width:420px; margin: 0 auto 14px; }
+    .instructions p { margin: 0 0 10px; }
+    .instructions strong { color: #ffd700; font-weight:800; }
+    .btf-title { display:none; }
+    /* keep the embedded video within the visual background width */
+    .video-frame { margin:16px auto; width:92%; max-width:420px; }
+    .video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#000; border:3px solid rgba(255,102,0,0.65); box-shadow:0 0 22px rgba(255,102,0,0.55); }
+    .answer-buttons { display:flex; gap:10px; justify-content:center; align-items:center; }
+    .answer-btn { padding:10px 18px; font-weight:800; font-family:'Orbitron', monospace; border-radius:8px; border:3px solid rgba(255,102,0,0.85); background:linear-gradient(135deg,#ffd700,#ffcc33); color:#000; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,0.35); transition:transform .12s ease, box-shadow .12s ease; }
+    .answer-btn:hover { transform: translateY(-4px); box-shadow:0 10px 26px rgba(0,0,0,0.4); }
+    .answer-btn.chosen { outline:3px solid rgba(0,200,255,0.6); transform:translateY(-2px) scale(1.02); }
+
+    /* basic responsive */
+    @media (max-width:768px){
+      #startBtn{ font-size:24px; padding:20px 45px;}
+      #countdown{ font-size:80px; }
+      /* smaller instruction text and video on mobile */
+      .instructions { font-size:13px; padding:10px 12px; }
+      .btf-title { font-size:20px; }
+      .video-frame { max-width:360px; width:94%; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- shared visual layers and controls -->
+  <div id="countdown"></div>
+
+  <div id="phaseLinks">
+    <a href="#" class="phase-link" data-phase="1" data-key="ZmFzZTE=">Fase_1</a>
+    <a href="#" class="phase-link" data-phase="2" data-key="cXVhbg==">Fase_2</a>
+    <a href="#" class="phase-link" data-phase="3" data-key="bGE=">Fase_3</a>
+    <a href="#" class="phase-link" data-phase="4" data-key="bXVudGFueWE=">Fase_4</a>
+    <a href="#" class="phase-link" data-phase="5" data-key="Y2F1">Fase_5</a>
+  </div>
+
+  <div class="btf-glow"></div>
+  <div class="btf-grid"></div>
+
+  <!-- Page-specific content goes here. Use this template or copy blocks from tutu.html -->
+  <main id="pageContent">
+    <!-- Page-specific content (NO tocar el 'form' exterior) -->
+    <div style="text-align:center; padding:12px 10px;">
+      <!-- instrucciones adaptadas al ancho del fondo -->
+      <div class="instructions" role="region" aria-label="instruccions doc">
+        <p><strong>Marty,</strong> Això és més greu del que pensava.</p>
+
+        <p>El teu avi no va atropellar el teu pare, com era d'esperar, sinó que et va atropellar a tu. Et van recollir i et van curar i ara la teva mare s'ha enamorat de tu.</p>
+
+        <p>Això és molt fort!</p>
+
+        <p>Haurem d'aconseguir que la teva mare et torni a enamorar del teu pare.</p>
+        <p>Si falles més de 2 cops hauràs de començár de nou.</p>
+      </div>
+
+      <div class="video-frame" aria-label="video frame">
+        <div class="video-wrap">
+          <video id="doc1Video" src="love01.mp4" controls playsinline preload="metadata" style="width:100%; height:100%; display:block; background:#000;" tabindex="0">Tu navegador no soporta el elemento video.</video>
+        </div>
+        <!-- fail counter and question label -->
+        <div id="failArea" style="text-align:center; margin-top:10px; color:#ffcccb; font-weight:800;">Errades: <span id="failCount">0</span></div>
+
+        <!-- question label (e.g. "pregunta numero 1") -->
+        <div id="questionLabel" style="text-align:center; margin-top:8px; color:#ffd700; font-weight:900; display:none;">pregunta numero 1</div>
+
+        <!-- answer buttons: hidden until 24s after video playback starts -->
+        <div id="answerButtons" class="answer-buttons" aria-hidden="true" style="display:none; margin-top:14px;">
+          <button class="answer-btn" data-answer="A">A</button>
+          <button class="answer-btn" data-answer="B">B</button>
+          <button class="answer-btn" data-answer="C">C</button>
+          <button class="answer-btn" data-answer="D">D</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Example small snippet showing how pages using the template can hook into the start button -->
+  <script>
+    // This page doesn't use the start button; pageContent is visible by default.
+
+    // Phase links keep the base64-password pattern from original files
+    document.querySelectorAll('.phase-link').forEach(link => {
+      link.addEventListener('click', function(e){
+        e.preventDefault();
+        const phase = this.dataset.phase;
+        const encodedKey = this.dataset.key;
+        const userPassword = prompt('Introdueix la contrasenya:');
+        if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
+          // By default, redirect to decoded path
+          window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','bG92ZS9mYXNzc3NlNC5odG1s','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
+        } else if (userPassword) {
+          alert('Contrasenya incorrecta!');
+        }
+      });
+
+    });
+
+    // --- Show answer buttons 24s after the video starts playing and add Q/A flow ---
+    (function() {
+        const video = document.getElementById('doc1Video');
+        const btnWrap = document.getElementById('answerButtons');
+        const buttons = btnWrap ? Array.from(btnWrap.querySelectorAll('.answer-btn')) : [];
+        // videos sequence and correct answers
+        const sequence = [
+          { src: 'love01.mp4', correct: 'C' },
+          { src: 'love02.mp4', correct: 'A' },
+          { src: 'love03.mp4', correct: 'B' },
+          { src: 'love04.mp4', correct: 'D' },
+          { src: 'love05.mp4', correct: 'B' },
+          { src: 'love06.mp4', correct: 'A' },
+          { src: 'love07.mp4', correct: null } // last video: no question (closes the test)
+        ];
+
+        let timer = null;
+        let shown = false;
+        let currentIndex = 0; // which video in the sequence we're on
+        let failures = 0;
+
+        function showButtons() {
+          if (shown || !btnWrap) return;
+          shown = true;
+          btnWrap.style.display = 'flex';
+          btnWrap.setAttribute('aria-hidden', 'false');
+          // enable buttons when shown
+          buttons.forEach(b => b.disabled = false);
+          // show the question label if there is a question for this index
+          const qLabel = document.getElementById('questionLabel');
+          if (qLabel) {
+            if (sequence[currentIndex] && sequence[currentIndex].correct) {
+              qLabel.style.display = 'block';
+              qLabel.textContent = 'pregunta numero ' + (currentIndex + 1);
+            } else {
+              // last video - no question
+              qLabel.style.display = 'none';
+            }
+          }
+        }
+
+        function schedule() {
+          if (shown) return;
+          if (timer) clearTimeout(timer);
+          // show after 24 seconds
+          timer = setTimeout(showButtons, 24000);
+        }
+
+        function loadIndex(i) {
+          // clamp index
+          if (i < 0) i = 0;
+          if (i >= sequence.length) i = sequence.length - 1;
+          currentIndex = i;
+
+          // hide/disable controls until they re-appear
+          shown = false; if (timer) { clearTimeout(timer); timer = null; }
+          if (btnWrap) { btnWrap.style.display = 'none'; btnWrap.setAttribute('aria-hidden', 'true'); buttons.forEach(b => { b.classList.remove('chosen'); b.disabled = true; }); }
+
+          const meta = sequence[currentIndex];
+          if (meta) {
+            video.src = meta.src;
+            video.load();
+            // update question label accordingly (hidden until shown)
+            const qLabel = document.getElementById('questionLabel');
+            if (qLabel) {
+              if (meta.correct) {
+                qLabel.style.display = 'none';
+                qLabel.textContent = 'pregunta numero ' + (currentIndex + 1);
+              } else {
+                qLabel.style.display = 'none';
+                qLabel.textContent = '';
+              }
+            }
+          }
+        }
+
+        // initialize UI and disabled state for buttons
+        buttons.forEach(b => b.disabled = true);
+
+        // start with index 0
+        loadIndex(0);
+
+        if (video) {
+          // start scheduling when playback starts
+          video.addEventListener('playing', schedule);
+          video.addEventListener('play', schedule);
+          // If user seeks/rewinds and wants to restart showing, do not reshow if already shown
+          video.addEventListener('ended', () => {
+            // if last video ended (no question), consider test closed
+            const currentMeta = sequence[currentIndex];
+            if (!currentMeta.correct) {
+              // last video ended - final
+              setTimeout(() => alert('Test finalitzat. Gràcies!'), 200);
+            } else {
+              // if ended before user answered, we still schedule showing
+              if (!shown) schedule();
+            }
+          });
+        }
+
+        // simple click handler: highlight chosen button
+        buttons.forEach(b => b.addEventListener('click', function() {
+          if (b.disabled) return; // ignore clicks while disabled
+          buttons.forEach(x => x.classList.remove('chosen'));
+          this.classList.add('chosen');
+
+          // process answer
+          const answer = this.dataset.answer;
+          const correct = sequence[currentIndex] ? sequence[currentIndex].correct : null;
+
+          if (!correct) {
+            // no question for this video (probably last). Ignore.
+            alert('No hi ha pregunta per a aquest vídeo.');
+            return;
+          }
+
+          if (answer === correct) {
+            // correct
+            alert('CORRECTE!');
+            // advance to next
+            const next = currentIndex + 1;
+            if (next >= sequence.length) {
+              alert('Has completat el test!');
+            } else {
+              // load next video and play automatically
+              loadIndex(next);
+              // play the next video (user gesture may be required in some browsers)
+              const tryPlay = video.play();
+              if (tryPlay && typeof tryPlay.then === 'function') tryPlay.catch(() => {});
+              // buttons will re-appear 24s after playback begins for next video
+            }
+          } else {
+            // wrong answer
+            failures++;
+            const failCountEl = document.getElementById('failCount');
+            if (failCountEl) failCountEl.textContent = failures;
+            alert('ERROR');
+            // if fail count crosses threshold >4
+            if (failures > 2) {
+              alert('OH NO! El teus pares no es casaran i no neixaràs. Has mort. Vols provar de nou?');
+              // reset test
+              failures = 0;
+              if (failCountEl) failCountEl.textContent = failures;
+              loadIndex(0);
+              // play again from start
+              const p = video.play();
+              if (p && typeof p.then === 'function') p.catch(() => {});
+            }
+          }
+        }));
+      })();
+  </script>
+</body>
+</html>
