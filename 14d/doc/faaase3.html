@@ -1,415 +1,146 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Back to the Future</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html, body {
-            height: 100%;
-        }
-        
-        body {
-            font-family: 'Arial', sans-serif;
-            background-image: url('iPhone-wallpaper-back-to-the-future.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: bottom center;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tutu — plantilla común</title>
+  <style>
+    /* ------------------------------
+       Esta plantilla contiene la parte COMÚN
+       usada por index.html y sandman/ffase2.html
+       Coloca tu contenido específico en el <main id="pageContent"> ... </main>
+       ------------------------------ */
 
-        /* Links de navegación inferior */
-        #phaseLinks {
-            position: fixed;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            display: flex;
-            gap: 15px;
-            padding: 10px 20px;
-            background: rgba(11, 18, 33, 0.8);
-            border-radius: 20px;
-            border: 2px solid rgba(255, 102, 0, 0.5);
-            box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
-        }
+    html, body { margin: 0; height: 100%; }
 
-        .phase-link {
-            font-family: 'Orbitron', monospace;
-            font-size: 14px;
-            font-weight: 700;
-            color: #ffd700;
-            text-decoration: none;
-            padding: 8px 15px;
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-        }
+    body {
+      /* file located in parent folder */
+      background-image: url('../iPhone-wallpaper-back-to-the-future.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: bottom center;
+      background-attachment: fixed;
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      color: #fff;
+    }
 
-        .phase-link:hover {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: rgba(255, 215, 0, 0.6);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            transform: translateY(-2px);
-        }
+    /* Shared UI pieces */
+    #startBtn {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 10000; padding: 25px 60px; font-family: 'Orbitron', monospace;
+      font-size: 32px; font-weight: 900; text-transform: uppercase; color: #000;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+      border: 4px solid #ff6600; border-radius: 12px; cursor: pointer;
+      box-shadow: 0 0 30px rgba(255,102,0,0.9), 0 0 60px rgba(255,215,0,0.7);
+    }
 
-        @media (max-width: 768px) {
-            #phaseLinks {
-                gap: 8px;
-                padding: 8px 12px;
-            }
-            .phase-link {
-                font-size: 11px;
-                padding: 6px 10px;
-            }
-        }
+    #countdown {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      z-index: 10001; font-family: 'Orbitron', monospace; font-size: 120px; font-weight:900; color:#ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,102,0,1);
+    }
 
-        /* Resplandor retro-futurista */
-        .btf-glow {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background: radial-gradient(circle at center,
-                rgba(255,120,0,0.55) 0%,
-                rgba(255,0,80,0.50) 30%,
-                rgba(0,200,255,0.45) 60%,
-                rgba(0,0,0,0) 80%
-            );
-            mix-blend-mode: screen;
-            animation: glowPulse 4s ease-in-out infinite;
-            opacity: 0.9;
-            filter: blur(2px);
-            z-index: 1;
-        }
-        
-        @keyframes glowPulse {
-            0%,100% { opacity: 0.75; }
-            50% { opacity: 1; }
-        }
+    #countdown.show { display:block; }
 
-        /* Rejilla neon "synthwave" */
-        .btf-grid {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50vh;
-            pointer-events: none;
-            background-image:
-                linear-gradient(0deg, rgba(0,255,255,0.6) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(255,0,200,0.6) 2px, transparent 2px);
-            background-size: 45px 45px;
-            transform: perspective(800px) rotateX(70deg);
-            opacity: 0.9;
-            mix-blend-mode: screen;
-            animation: gridGlow 6s linear infinite alternate;
-            filter: blur(0.4px);
-            z-index: 1;
-        }
-        
-        @keyframes gridGlow {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
+    #phaseLinks{
+      position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+      z-index: 10000; display:flex; gap:15px; padding:10px 20px;
+      background: rgba(11,18,33,0.8); border-radius:20px; border:2px solid rgba(255,102,0,0.5);
+    }
 
-        /* Chispas */
-        body::after {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image: radial-gradient(circle,
-                rgba(0,180,255,0.45) 0%,
-                rgba(0,0,0,0) 60%
-            );
-            mix-blend-mode: screen;
-            animation: sparks 2.8s infinite ease-in-out;
-            opacity: 0.8;
-            z-index: 1;
-        }
-        
-        @keyframes sparks {
-            0%,100% { opacity: 0.6; filter: blur(8px); }
-            50% { opacity: 1; filter: blur(14px); }
-        }
+    .phase-link{ font-family:'Orbitron', monospace; font-weight:700; color:#ffd700; padding:8px 15px; background: rgba(255,215,0,0.08); border-radius:8px; text-decoration:none; }
 
-        /* Rayo animado */
-        .btf-lightning {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(0,200,255,0) 0%,
-                rgba(0,200,255,0) 20%,
-                rgba(0,200,255,1) 45%,
-                rgba(255,255,255,1) 50%,
-                rgba(0,200,255,1) 55%,
-                rgba(0,200,255,0) 80%,
-                rgba(0,200,255,0) 100%
-            );
-            transform: translateX(-50%);
-            filter: blur(2px);
-            opacity: 0;
-            pointer-events: none;
-            animation: lightningFlash 6s infinite;
-            mix-blend-mode: screen;
-            z-index: 1;
-        }
+    /* Visual effects shared between pages */
+    .btf-glow{ position:fixed; inset:0; pointer-events:none; background: radial-gradient(circle at center, rgba(255,120,0,0.55) 0%, rgba(255,0,80,0.5) 30%, rgba(0,200,255,0.45) 60%, rgba(0,0,0,0) 80%); mix-blend-mode:screen; animation: glowPulse 4s ease-in-out infinite; filter: blur(2px); }
+    @keyframes glowPulse{ 0%,100%{opacity:.75} 50%{opacity:1} }
 
-        @keyframes lightningFlash {
-            0%, 92%, 100% { opacity: 0; }
-            93% { opacity: 1; height: 80%; }
-            94% { opacity: 0.6; height: 100%; }
-            95% { opacity: 1; height: 60%; }
-        }
+    .btf-grid{ position:fixed; bottom:0; left:0; width:100%; height:45vh; pointer-events:none; background-image: linear-gradient(0deg, rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px); background-size:55px 55px; transform:perspective(900px) rotateX(65deg); opacity:0.45; mix-blend-mode:screen; }
 
-        /* Ondas de choque */
-        .btf-shockwave {
-            position: fixed;
-            top: 50%; left: 50%;
-            width: 20px; height: 20px;
-            border-radius: 50%;
-            border: 4px solid rgba(0,200,255,0.8);
-            transform: translate(-50%, -50%);
-            animation: shock 3s infinite;
-            mix-blend-mode: screen;
-            pointer-events: none;
-            opacity: 0.9;
-            z-index: 1;
-        }
-        
-        @keyframes shock {
-            0% { width: 20px; height: 20px; opacity: 1; }
-            100% { width: 900px; height: 900px; opacity: 0; }
-        }
+    /* small helpers so template pages look consistent */
+    main#pageContent{ position:relative; z-index:10; width:100%; max-width:1100px; margin: 20px auto; padding: 20px; box-sizing:border-box; }
 
-        /* Fuego */
-        .btf-fire {
-            position: fixed;
-            bottom: 0; left: 50%;
-            width: 80%; height: 120px;
-            transform: translateX(-50%);
-            background: radial-gradient(circle,
-                rgba(255,120,0,0.8) 0%,
-                rgba(255,30,0,0.7) 40%,
-                rgba(255,255,0,0.4) 60%,
-                rgba(0,0,0,0) 100%
-            );
-            mix-blend-mode: screen;
-            filter: blur(12px);
-            animation: firePulse 2.5s infinite ease-in-out;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        @keyframes firePulse {
-            0%,100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
+    /* Per-page presentation: instructions and embedded frame */
+    /* make the instruction box smaller so it fits the background frame */
+    .instructions { color: #fff; background: rgba(11,18,33,0.35); padding: 12px 14px; border-radius: 10px; border: 2px solid rgba(255,102,0,0.18); box-shadow: 0 8px 36px rgba(0,0,0,0.45); text-align:left; line-height:1.4; font-size:14px; max-width:420px; margin: 0 auto 14px; }
+    .instructions p { margin: 0 0 10px; }
+    .instructions strong { color: #ffd700; font-weight:800; }
+    .btf-title { display:none; }
+    /* keep the embedded video within the visual background width */
+    .video-frame { margin:16px auto; width:92%; max-width:420px; }
+    .video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#000; border:3px solid rgba(255,102,0,0.65); box-shadow:0 0 22px rgba(255,102,0,0.55); }
 
-        /* Estelas */
-        .btf-trails {
-            position: fixed;
-            bottom: 0; left: 50%;
-            width: 70%; height: 3px;
-            transform: translateX(-50%);
-            background: linear-gradient(90deg,
-                rgba(255,80,0,1), rgba(255,200,0,1), rgba(255,80,0,1)
-            );
-            filter: blur(4px);
-            animation: trailsFlash 1.2s infinite;
-            mix-blend-mode: screen;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        @keyframes trailsFlash {
-            0%,100% { opacity: 0.2; }
-            50% { opacity: 1; }
-        }
+    /* basic responsive */
+    @media (max-width:768px){
+      #startBtn{ font-size:24px; padding:20px 45px;}
+      #countdown{ font-size:80px; }
+      /* smaller instruction text and video on mobile */
+      .instructions { font-size:13px; padding:10px 12px; }
+      .btf-title { font-size:20px; }
+      .video-frame { max-width:360px; width:94%; }
+    }
 
-        /* Partículas */
-        .btf-particles {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image: radial-gradient(circle,
-                rgba(0,200,255,0.5) 2px,
-                rgba(0,0,0,0) 3px
-            );
-            background-size: 120px 120px;
-            animation: particlesMove 8s linear infinite;
-            mix-blend-mode: screen;
-            opacity: 0.6;
-            z-index: 1;
-        }
-        
-        @keyframes particlesMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 200px 400px; }
-        }
-
-        /* Distorsión temporal */
-        .btf-warp {
-            position: fixed;
-            top: 50%; left: 50%;
-            width: 300px; height: 300px;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            background: radial-gradient(circle,
-                rgba(255,255,255,0.9) 0%,
-                rgba(0,200,255,0.5) 40%,
-                rgba(0,0,0,0) 80%
-            );
-            filter: blur(22px);
-            opacity: 0.5;
-            animation: warpPulse 3.5s infinite ease-in-out;
-            mix-blend-mode: screen;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        @keyframes warpPulse {
-            0%,100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-            50% { transform: translate(-50%, -50%) scale(1.35); opacity: 0.9; }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                background-size: contain;
-                background-position: center bottom;
-                background-attachment: scroll;
-            }
-            .btf-grid {
-                height: 35vh;
-                background-size: 35px 35px;
-                transform: perspective(600px) rotateX(60deg);
-            }
-            .btf-lightning {
-                width: 3px;
-                filter: blur(1.5px);
-            }
-            .btf-shockwave {
-                width: 10px; height: 10px;
-            }
-            @keyframes shock {
-                0% { width: 10px; height: 10px; opacity: 1; }
-                100% { width: 500px; height: 500px; opacity: 0; }
-            }
-            .btf-fire {
-                height: 80px;
-                filter: blur(10px);
-            }
-            .btf-trails {
-                width: 80%; height: 2px;
-            }
-            .btf-warp {
-                width: 200px; height: 200px;
-                filter: blur(16px);
-            }
-            .btf-particles {
-                background-size: 80px 80px;
-            }
-        }
-
-        /* Contenedor de video */
-        .video-container {
-            position: relative;
-            max-width: 800px;
-            width: 90%;
-            aspect-ratio: 16/9;
-            z-index: 10;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(255,102,0,0.8);
-            border: 3px solid #ff6600;
-        }
-
-        .video-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        @media (max-width: 768px) {
-            .video-container {
-                width: 95%;
-                max-width: 100%;
-            }
-        }
-    </style>
+  </style>
 </head>
 <body>
-    <!-- Efectos visuales Back to the Future -->
-    <div class="btf-glow"></div>
-    <div class="btf-grid"></div>
-    <div class="btf-lightning"></div>
-    <div class="btf-shockwave"></div>
-    <div class="btf-fire"></div>
-    <div class="btf-trails"></div>
-    <div class="btf-particles"></div>
-    <div class="btf-warp"></div>
+  <!-- shared visual layers and controls -->
+  <div id="countdown"></div>
 
-    <!-- Links de fases -->
-    <div id="phaseLinks">
-        <a href="#" class="phase-link" data-phase="1" data-key="ZmFzZTE=">Fase_1</a>
-        <a href="#" class="phase-link" data-phase="2" data-key="cXVhbg==">Fase_2</a>
-        <a href="#" class="phase-link" data-phase="3" data-key="bGE=">Fase_3</a>
-        <a href="#" class="phase-link" data-phase="4" data-key="bXVudGFueWE=">Fase_4</a>
-        <a href="#" class="phase-link" data-phase="5" data-key="Y2F1">Fase_5</a>
-    </div>
+  <div id="phaseLinks">
+    <a href="#" class="phase-link" data-phase="1" data-key="ZmFzZTE=">Fase_1</a>
+    <a href="#" class="phase-link" data-phase="2" data-key="cXVhbg==">Fase_2</a>
+    <a href="#" class="phase-link" data-phase="3" data-key="bGE=">Fase_3</a>
+    <a href="#" class="phase-link" data-phase="4" data-key="bXVudGFueWE=">Fase_4</a>
+    <a href="#" class="phase-link" data-phase="5" data-key="Y2F1">Fase_5</a>
+  </div>
 
-<!-- Contenedor de video -->
-    <div class="video-container" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(11,18,33,0.95) 0%, rgba(255,102,0,0.2) 100%);">
-        <div style="text-align: center; padding: 40px;">
-            <h2 style="color: #ffd700; font-size: 28px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,215,0,0.8);">🎬 Video Back to the Future</h2>
-            <a href="https://www.youtube.com/watch?v=bxp-pt-6qWE" 
-               target="_blank"
-               style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #ff6600, #ff9933); color: white; text-decoration: none; font-size: 18px; font-weight: bold; border-radius: 8px; box-shadow: 0 0 20px rgba(255,102,0,0.6); transition: all 0.3s ease;"
-               onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 30px rgba(255,102,0,0.9)';"
-               onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 0 20px rgba(255,102,0,0.6)';">
-                ▶️ VER VIDEO EN YOUTUBE
-            </a>
-            <p style="color: #00c8ff; margin-top: 20px; font-size: 14px;">El video se abrirá en una nueva pestaña</p>
+  <div class="btf-glow"></div>
+  <div class="btf-grid"></div>
+
+  <!-- Page-specific content goes here. Use this template or copy blocks from tutu.html -->
+  <main id="pageContent">
+    <!-- Page-specific content (NO tocar el 'form' exterior) -->
+    <div style="text-align:center; padding:12px 10px;">
+      <!-- instrucciones adaptadas al ancho del fondo -->
+      <div class="instructions" role="region" aria-label="instruccions doc">
+        <p>Només hi ha una persona en aquesta època que et pot ajudar a tornar a casa. Aquest és el teu amic <strong>Emmet Brown ('Doc')</strong>; li hauràs de demostrar que ets qui dius i convèncer-lo per tornar.</p>
+
+        <p>Mira el vídeo i respon a la seva pregunta per correu electrònic.</p>
+
+        <p><strong>Destinatari:</strong> dr.emmett.brown.hill.valley@gmail.com<br>
+        <strong>Títol:</strong> Hauràs d'escriure les 2 paraules que formen la resposta<br>
+        <strong>Contingut:</strong> Li pots escriure a Doc el missatge que vulguis</p>
+
+        <p>Si ho fas bé, Doc et respondrà de seguida, estigues atent al que et digui.</p>
+      </div>
+
+      <div class="video-frame" aria-label="video frame">
+        <div class="video-wrap">
+          <video id="doc1Video" src="doc1.mp4" controls playsinline preload="metadata" style="width:100%; height:100%; display:block; background:#000;" tabindex="0">Tu navegador no soporta el elemento video.</video>
         </div>
+      </div>
     </div>
+  </main>
 
-    <script>
-        // Manejar los links de fases
-        const _0x3f9d = ['aW5kZXguaHRtbA==', 'c2FuZG1hbi9mZmFzZTIuaHRtbA==', 'ZmFhYXNlMy5odG1s', 'ZmFzc3NzZTQuaHRtbA==', 'ZmFzZWVlZWU1Lmh0bWw='];
-        
-        document.querySelectorAll('.phase-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const phase = this.dataset.phase;
-                const encodedKey = this.dataset.key;
-                const userPassword = prompt('Introdueix la contrasenya:');
-                
-                if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
-                    window.location.href = atob(_0x3f9d[phase - 1]);
-                } else if (userPassword) {
-                    alert('Contrasenya incorrecta!');
-                }
-            });
-        });
-    </script>
+  <!-- Example small snippet showing how pages using the template can hook into the start button -->
+  <script>
+    // This page doesn't use the start button; pageContent is visible by default.
+
+    // Phase links keep the base64-password pattern from original files
+    document.querySelectorAll('.phase-link').forEach(link => {
+      link.addEventListener('click', function(e){
+        e.preventDefault();
+        const phase = this.dataset.phase;
+        const encodedKey = this.dataset.key;
+        const userPassword = prompt('Introdueix la contrasenya:');
+        if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
+          // By default, redirect to decoded path
+          window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','ZmFzc3NzZTQuaHRtbA==','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
+        } else if (userPassword) {
+          alert('Contrasenya incorrecta!');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

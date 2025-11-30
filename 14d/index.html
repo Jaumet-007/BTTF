@@ -275,12 +275,33 @@
       aspect-ratio: 16/9;
     }
 
-    #videoContainer iframe {
+    #videoContainer iframe,
+    #videoContainer video {
       width: 100%;
       height: 100%;
       border: 4px solid #ff6600;
       border-radius: 8px;
       box-shadow: 0 0 30px rgba(255,102,0,0.8);
+    }
+
+    /* Modal close button */
+    .video-close {
+      position: absolute;
+      top: -18px;
+      right: -18px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ff6600;
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #ffd700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+      z-index: 100001;
     }
 
       /* Resplandor retro-futurista — versión más intensa */
@@ -731,9 +752,15 @@
   </div> <!-- Cierre de mainContent -->
 
   <!-- Modal de video -->
-  <div id="videoModal">
+  <div id="videoModal" aria-hidden="true">
     <div id="videoContainer">
-      <iframe id="youtubePlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <!-- Close button for the modal -->
+      <button class="video-close" id="videoClose" aria-label="Cerrar vídeo">✕</button>
+
+      <!-- Local video (expects video.mp4 next to index.html) -->
+      <video id="localVideo" src="video.mp4" controls playsinline preload="metadata" style="background:#000; display:block;" tabindex="0">
+        Tu navegador no soporta el elemento <code>video</code>.
+      </video>
     </div>
   </div>
 
@@ -752,32 +779,98 @@
       }).catch(err => console.log('Error al reproducir:', err));
     });
 
-    // Manejar el botón del DeLorean
+
+    // Manejar el botón del DeLorean: abrir modal y reproducir local video
     document.getElementById('deloreanBtn').addEventListener('click', function(e) {
       e.preventDefault();
-      
-      // Abrir el video en una nueva pestaña
-      window.open('https://youtu.be/obdZLT5GmJs', '_blank');
-      
-      // Mostrar y empezar contador
+
+      const modal = document.getElementById('videoModal');
+      const video = document.getElementById('localVideo');
+
+      // Mostrar modal y reproducir
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+      try {
+        video.currentTime = 0;
+        video.play().catch(err => console.log('Reproducción bloqueada o no permitida:', err));
+      } catch (err) {
+        console.log('Error al reproducir el vídeo:', err);
+      }
+
+      // Importante: NO iniciamos la cuenta atrás aquí. El temporizador
+      // se activa SÓLO cuando el usuario cierra el modal o cuando el
+      // video termina.
+
+      // Guard para evitar múltiples ejecuciones de la secuencia final
+      let finishRequested = false;
+
+      // referencia al elemento del contador
       const countdownEl = document.getElementById('countdown');
-      countdownEl.classList.add('show');
-      let timeLeft = 60;
-      countdownEl.textContent = timeLeft;
-      
-      const countdownInterval = setInterval(() => {
-        timeLeft--;
+
+      // Inicia la cuenta atrás de 5s que redirige al finalizar
+      const startFinishCountdown = () => {
+        if (finishRequested) return; // ya iniciado
+        finishRequested = true;
+
+        countdownEl.classList.add('show');
+        let timeLeft = 5;
         countdownEl.textContent = timeLeft;
-        
-        if (timeLeft <= 0) {
-          clearInterval(countdownInterval);
-          window.location.href = '180kmh/2_botones.html';
+
+        const interval = setInterval(() => {
+          timeLeft--;
+          countdownEl.textContent = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            try { video.pause(); } catch (e) {}
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            countdownEl.classList.remove('show');
+            window.location.href = '180kmh/2_botones.html';
+          }
+        }, 1000);
+      };
+
+      // Cerrar modal desde el botón
+      const closeBtn = document.getElementById('videoClose');
+      const closeModal = () => {
+        // Al cerrar manualmente, ocultamos el modal y arrancamos la cuenta atrás
+        try { video.pause(); } catch (e) {}
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        startFinishCountdown();
+      };
+
+      if (closeBtn) closeBtn.onclick = closeModal;
+
+      // Cerrar al hacer clic fuera del contenedor
+      modal.addEventListener('click', function(ev) {
+        if (ev.target === modal) closeModal();
+      });
+
+      // Cerrar con Escape
+      document.addEventListener('keydown', function escHandler(ev) {
+        if (ev.key === 'Escape') {
+          closeModal();
+          document.removeEventListener('keydown', escHandler);
         }
-      }, 1000);
+      });
+
+      // Si el video termina, ocultar modal y arrancar la cuenta atrás de 5s
+      video.addEventListener('ended', function() {
+        try { video.pause(); } catch (e) {}
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        startFinishCountdown();
+      });
     });
 
     // Manejar los links de fases
-    const _0x3f9d = ['aW5kZXguaHRtbA==', 'c2FuZG1hbi9mZmFzZTIuaHRtbA==', 'ZmFhYXNlMy5odG1s', 'ZmFzc3NzZTQuaHRtbA==', 'ZmFzZWVlZWU1Lmh0bWw='];
+    // Destinos codificados (base64). Mantengo la estructura codificada.
+    // Reemplacé la entrada de fase 3 por la URL absoluta codificada en base64
+    // https://jaumet-007.github.io/BTTF/14d/faaase3.html
+    // Destinos codificados (base64). La entrada de Fase_3 apunta ahora a
+    // https://jaumet-007.github.io/BTTF/14d/doc/faaase3.html (en base64)
+    const _0x3f9d = ['aW5kZXguaHRtbA==', 'c2FuZG1hbi9mZmFzZTIuaHRtbA==', 'aHR0cHM6Ly9qYXVtZXQtMDA3LmdpdGh1Yi5pby9CVFRGLzE0ZC9kb2MvZmFhYXNlMy5odG1s', 'ZmFzc3NzZTQuaHRtbA==', 'ZmFzZWVlZWU1Lmh0bWw='];
     
     document.querySelectorAll('.phase-link').forEach(link => {
       link.addEventListener('click', function(e) {

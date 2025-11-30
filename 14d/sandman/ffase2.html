@@ -194,6 +194,21 @@
             }
         }
 
+        /* Modal video styles */
+        #videoModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 10010;
+            justify-content: center;
+            align-items: center;
+        }
+        #videoModal.show { display:flex; }
+        #videoContainer { position: relative; width: 90%; max-width: 900px; aspect-ratio: 16/9; }
+        #videoContainer video { width:100%; height:100%; border-radius:8px; border:4px solid #ff6600; box-shadow:0 0 30px rgba(255,102,0,0.8); background:#000; }
+        .video-close { position:absolute; top:-18px; right:-18px; width:44px; height:44px; border-radius:50%; background:#ff6600; color:#fff; border:3px solid #ffd700; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; z-index:10011; }
+
         /* Resplandor retro-futurista */
         .btf-glow {
             position: fixed;
@@ -815,36 +830,102 @@
     </script>
     </div> <!-- Cierre de mainContent -->
 
+    <!-- Modal para video local -->
+    <div id="videoModal" aria-hidden="true">
+        <div id="videoContainer">
+            <button class="video-close" id="videoClose" aria-label="Cerrar vídeo">✕</button>
+            <video id="localVideo" src="video2.mp4" controls playsinline preload="metadata" tabindex="0">Tu navegador no soporta el elemento <code>video</code>.</video>
+        </div>
+    </div>
+
     <script>
-        // Manejar el botón de inicio
+        // Manejar el botón de inicio: abrir modal con video local y reproducir
         document.getElementById('startBtn').addEventListener('click', function() {
             // Ocultar el botón
             this.style.display = 'none';
-            
-            // Abrir el video en una nueva pestaña
-            window.open('https://youtu.be/bGKeH-r2n6U', '_blank');
-            
-            // Mostrar y empezar contador
+
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('localVideo');
+
+            // Mostrar modal y reproducir
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            try {
+                video.currentTime = 0;
+                video.play().catch(err => console.log('Reproducción bloqueada o no permitida:', err));
+            } catch (err) {
+                console.log('Error al reproducir el video:', err);
+            }
+
+            // El temporizador NO inicia aquí. Se lanzará al cerrar el modal o
+            // cuando el video termine.
+
+            let finishRequested = false;
             const countdownEl = document.getElementById('countdown');
-            countdownEl.classList.add('show');
-            let timeLeft = 6;
-            countdownEl.textContent = timeLeft;
-            
-            const countdownInterval = setInterval(() => {
-                timeLeft--;
+
+            const startFinishCountdown = () => {
+                if (finishRequested) return;
+                finishRequested = true;
+
+                countdownEl.classList.add('show');
+                let timeLeft = 5; // 5 segundos antes de mostrar contenido
                 countdownEl.textContent = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    countdownEl.classList.remove('show');
-                    // Mostrar el contenido principal después del contador
-                    document.getElementById('mainContent').classList.add('show');
+
+                const interval = setInterval(() => {
+                    timeLeft--;
+                    countdownEl.textContent = timeLeft;
+                    if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        countdownEl.classList.remove('show');
+                        // Mostrar el contenido principal después del contador
+                        document.getElementById('mainContent').classList.add('show');
+                    }
+                }, 1000);
+            };
+
+            // Cerrar modal: pausar video y arrancar el temporizador de 5s
+            const closeBtn = document.getElementById('videoClose');
+            const closeModal = () => {
+                try { video.pause(); } catch (e) {}
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+                startFinishCountdown();
+            };
+
+            if (closeBtn) closeBtn.onclick = closeModal;
+
+            modal.addEventListener('click', function(ev) {
+                if (ev.target === modal) closeModal();
+            });
+
+            document.addEventListener('keydown', function escHandler(ev) {
+                if (ev.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', escHandler);
                 }
-            }, 1000);
+            });
+
+            // Si el video termina, ocultamos modal y lanzamos la cuenta atrás
+            video.addEventListener('ended', function() {
+                try { video.pause(); } catch (e) {}
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+                startFinishCountdown();
+            });
         });
 
         // Manejar los links de fases
-        const _0x3f9d = ['aW5kZXguaHRtbA==', 'c2FuZG1hbi9mZmFzZTIuaHRtbA==', 'ZmFhYXNlMy5odG1s', 'ZmFzc3NzZTQuaHRtbA==', 'ZmFzZWVlZWU1Lmh0bWw='];
+        // Destinos codificados (base64). Si el destino final es absoluto (http/https)
+        // lo dejamos codificado igualmente aquí como 'encrypted' y la función
+        // lo usará tal cual.
+        const _0x3f9d = [
+            'aW5kZXguaHRtbA==',
+            'c2FuZG1hbi9mZmFzZTIuaHRtbA==',
+            // base64 de https://jaumet-007.github.io/BTTF/14d/doc/faaase3.html
+            'aHR0cHM6Ly9qYXVtZXQtMDA3LmdpdGh1Yi5pby9CVFRGLzE0ZC9kb2MvZmFhYXNlMy5odG1s',
+            'ZmFzc3NzZTQuaHRtbA==',
+            'ZmFzZWVlZWU1Lmh0bWw='
+        ];
         
         document.querySelectorAll('.phase-link').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -855,7 +936,13 @@
                 const userPassword = prompt('Introdueix la contrasenya:');
                 
                 if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
-                    window.location.href = '../' + atob(_0x3f9d[phase - 1]);
+                    const dest = atob(_0x3f9d[phase - 1]);
+                    // si es URL absoluta (http/https) usamos directamente
+                    if (/^https?:\/\//i.test(dest)) {
+                        window.location.href = dest;
+                    } else {
+                        window.location.href = '../' + dest;
+                    }
                 } else if (userPassword) {
                     alert('Contrasenya incorrecta!');
                 }
