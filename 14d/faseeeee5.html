@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tutu — plantilla común</title>
+  <style>
+    /* ------------------------------
+       Esta plantilla contiene la parte COMÚN
+       usada por index.html y sandman/ffase2.html
+       Coloca tu contenido específico en el <main id="pageContent"> ... </main>
+       ------------------------------ */
+
+    html, body { margin: 0; height: 100%; }
+
+    body {
+      /* file located in this folder */
+      background-image: url('iPhone-wallpaper-back-to-the-future.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: bottom center;
+      background-attachment: fixed;
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    /* Shared UI pieces */
+    #startBtn {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 10000; padding: 25px 60px; font-family: 'Orbitron', monospace;
+      font-size: 32px; font-weight: 900; text-transform: uppercase; color: #000;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+      border: 4px solid #ff6600; border-radius: 12px; cursor: pointer;
+      box-shadow: 0 0 30px rgba(255,102,0,0.9), 0 0 60px rgba(255,215,0,0.7);
+    }
+
+    #countdown {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      z-index: 10001; font-family: 'Orbitron', monospace; font-size: 120px; font-weight:900; color:#ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,102,0,1);
+    }
+
+    #countdown.show { display:block; }
+
+    #phaseLinks{
+      position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+      z-index: 10000; display:flex; gap:15px; padding:10px 20px;
+      background: rgba(11,18,33,0.8); border-radius:20px; border:2px solid rgba(255,102,0,0.5);
+    }
+
+    .phase-link{ font-family:'Orbitron', monospace; font-weight:700; color:#ffd700; padding:8px 15px; background: rgba(255,215,0,0.08); border-radius:8px; text-decoration:none; }
+
+    /* Visual effects shared between pages */
+    .btf-glow{ position:fixed; inset:0; pointer-events:none; background: radial-gradient(circle at center, rgba(255,120,0,0.55) 0%, rgba(255,0,80,0.5) 30%, rgba(0,200,255,0.45) 60%, rgba(0,0,0,0) 80%); mix-blend-mode:screen; animation: glowPulse 4s ease-in-out infinite; filter: blur(2px); }
+    @keyframes glowPulse{ 0%,100%{opacity:.75} 50%{opacity:1} }
+
+    .btf-grid{ position:fixed; bottom:0; left:0; width:100%; height:45vh; pointer-events:none; background-image: linear-gradient(0deg, rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px); background-size:55px 55px; transform:perspective(900px) rotateX(65deg); opacity:0.45; mix-blend-mode:screen; }
+
+    /* small helpers so template pages look consistent */
+    main#pageContent{ position:relative; z-index:10; width:100%; max-width:1100px; margin: 20px auto; padding: 20px; box-sizing:border-box; }
+
+    /* Per-page presentation: instructions and embedded frame */
+    /* make the instruction box smaller so it fits the background frame */
+    .instructions { color: #fff; background: rgba(11,18,33,0.35); padding: 12px 14px; border-radius: 10px; border: 2px solid rgba(255,102,0,0.18); box-shadow: 0 8px 36px rgba(0,0,0,0.45); text-align:left; line-height:1.4; font-size:14px; max-width:420px; margin: 0 auto 14px; }
+    .instructions p { margin: 0 0 10px; }
+    .instructions strong { color: #ffd700; font-weight:800; }
+    .btf-title { display:none; }
+    /* keep the embedded video within the visual background width */
+    .video-frame { margin:16px auto; width:92%; max-width:420px; }
+    .video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#000; border:3px solid rgba(255,102,0,0.65); box-shadow:0 0 22px rgba(255,102,0,0.55); }
+    .answer-buttons { display:flex; gap:10px; justify-content:center; align-items:center; }
+    .answer-btn { padding:10px 18px; font-weight:800; font-family:'Orbitron', monospace; border-radius:8px; border:3px solid rgba(255,102,0,0.85); background:linear-gradient(135deg,#ffd700,#ffcc33); color:#000; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,0.35); transition:transform .12s ease, box-shadow .12s ease; }
+    .answer-btn:hover { transform: translateY(-4px); box-shadow:0 10px 26px rgba(0,0,0,0.4); }
+    .answer-btn.chosen { outline:3px solid rgba(0,200,255,0.6); transform:translateY(-2px) scale(1.02); }
+
+    /* basic responsive */
+    @media (max-width:768px){
+      #startBtn{ font-size:24px; padding:20px 45px;}
+      #countdown{ font-size:80px; }
+      /* smaller instruction text and video on mobile */
+      .instructions { font-size:13px; padding:10px 12px; }
+      .btf-title { font-size:20px; }
+      .video-frame { max-width:360px; width:94%; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- shared visual layers and controls -->
+  <div id="countdown"></div>
+
+  <div id="phaseLinks">
+    <a href="#" class="phase-link" data-phase="1" data-key="ZmFzZTE=">Fase_1</a>
+    <a href="#" class="phase-link" data-phase="2" data-key="cXVhbg==">Fase_2</a>
+    <a href="#" class="phase-link" data-phase="3" data-key="bGE=">Fase_3</a>
+    <a href="#" class="phase-link" data-phase="4" data-key="bXVudGFueWE=">Fase_4</a>
+    <a href="#" class="phase-link" data-phase="5" data-key="Y2F1">Fase_5</a>
+  </div>
+
+  <div class="btf-glow"></div>
+  <div class="btf-grid"></div>
+
+  <!-- Page-specific content goes here. Use this template or copy blocks from tutu.html -->
+  <main id="pageContent">
+    <!-- Page-specific content (NO tocar el 'form' exterior) -->
+    <div style="text-align:center; padding:12px 10px;">
+      <!-- instrucciones adaptadas al ancho del fondo -->
+      <div class="instructions" role="region" aria-label="instruccions doc">
+        <p>Ets al punt de no-retorn.</p>
+
+        <p>Has d'accelerar a 180km/h i tornar al futur.</p>
+
+        <p>Abans de moure't, Prem el botó <strong>"ACTIVAR GPS"</strong>. quan aparegui:</p>
+        <p style="text-align:center; margin:8px 0;">
+          <img src="gps.jpg" alt="gps" style="max-width:360px; width:70%; height:auto; display:block; margin:0 auto; border-radius:8px; box-shadow:0 6px 22px rgba(0,0,0,0.6);" />
+        </p>
+        <p>prem <strong>PERMETRE</strong> i comença a córrer per, en menys de 10 segons estar a 30 metres del punt inicial.</p>
+
+        <p>Si ho fas, el Delorean arribarà als 180 km/h i tornaràs a la teva època.</p>
+
+        <p>Quan estiguis a punt de córrer, prem <strong>ACTIVAR GPS</strong> i CORRE! només son 10 segons.</p>
+      </div>
+
+      <div class="video-frame" aria-label="video frame">
+        <div class="video-wrap">
+          <video id="doc1Video" src="love01.mp4" controls playsinline preload="metadata" style="width:100%; height:100%; display:block; background:#000;" tabindex="0">Tu navegador no soporta el elemento video.</video>
+        </div>
+        <!-- GPS controls for this phase: only INICIO button used -->
+        <div id="gpsControls" class="answer-buttons" aria-hidden="false" style="display:flex; flex-direction:column; gap:8px; margin-top:14px; align-items:center; position:relative;">
+          <button id="startGpsBtn" class="answer-btn" aria-label="ACTIVAR GPS">ACTIVAR GPS</button>
+          <div id="gpsStatus" style="font-weight:800; color:#ffd700; display:none;">Coordenada inicial: <span id="coordsText"></span></div>
+          <div id="distanceResult" style="font-weight:900; color:#ffcccb; display:none;">Distancia: <span id="distanceText"></span> m</div>
+          <!-- overlay shown when ACTIVAR GPS is pressed. centered image + PERMETRE button -->
+          <div id="gpsOverlay" style="display:none; position:absolute; inset:0; z-index:999; justify-content:center; align-items:center; background:rgba(0,0,0,0.6);">
+            <div style="text-align:center; max-width:80%;">
+              <img src="gps.jpg" alt="gps" style="max-width:320px; width:80%; height:auto; display:block; margin:0 auto 12px; border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,0.6);"/>
+              <div style="display:flex; gap:10px; justify-content:center; align-items:center; flex-direction:column;">
+                <button id="permitBtn" class="answer-btn" style="padding:10px 22px;">PERMETRE</button>
+                <div style="color:#ffd700; font-weight:700; margin-top:8px;">Prem <strong>PERMETRE</strong> i comença a córrer — només 10 segons</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Example small snippet showing how pages using the template can hook into the start button -->
+  <script>
+    // This page doesn't use the start button; pageContent is visible by default.
+
+    // Phase links keep the base64-password pattern from original files
+    document.querySelectorAll('.phase-link').forEach(link => {
+      link.addEventListener('click', function(e){
+        e.preventDefault();
+        const phase = this.dataset.phase;
+        const encodedKey = this.dataset.key;
+        const userPassword = prompt('Introdueix la contrasenya:');
+        if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
+          // By default, redirect to decoded path
+          window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','bG92ZS9mYXNzc3NlNC5odG1s','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
+        } else if (userPassword) {
+          alert('Contrasenya incorrecta!');
+        }
+      });
+
+      });
+
+      // end forEach (phase-link loop)
+
+      // --- GPS phase: INICIO button captures initial GPS coord, wait 10s and show distance ---
+      (function() {
+        const video = document.getElementById('doc1Video');
+        const startBtn = document.getElementById('startGpsBtn');
+        const gpsStatus = document.getElementById('gpsStatus');
+        const coordsText = document.getElementById('coordsText');
+        const distanceResult = document.getElementById('distanceResult');
+        const distanceText = document.getElementById('distanceText');
+
+        let startCoords = null;
+        let timer = null;
+        let countdownInterval = null;
+
+        function toRad(n){ return n * Math.PI / 180; }
+        function haversine(lat1, lon1, lat2, lon2){
+          const R = 6371000; // meters
+          const dLat = toRad(lat2 - lat1);
+          const dLon = toRad(lon2 - lon1);
+          const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+          return R * c;
+        }
+
+        function clearTimers(){ if (timer) { clearTimeout(timer); timer = null; } if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; } }
+
+        if (!startBtn) return; // nothing to do
+
+        startBtn.addEventListener('click', function(){
+          // show the overlay with the gps image and the PERMETRE action
+          const overlay = document.getElementById('gpsOverlay');
+          if (overlay) overlay.style.display = 'flex';
+          // temporarily disable the start button to prevent duplicates
+          startBtn.disabled = true;
+          distanceResult.style.display = 'none';
+        });
+
+        // PERMIT action: triggered when user presses PERMETRE on overlay
+        const permitBtn = document.getElementById('permitBtn');
+        if (permitBtn) {
+          permitBtn.addEventListener('click', function(){
+            // hide overlay and proceed with geolocation capture
+            const overlay = document.getElementById('gpsOverlay');
+            if (overlay) overlay.style.display = 'none';
+            gpsStatus.style.display = 'block';
+            gpsStatus.textContent = 'Obteniendo coordenada inicial...';
+
+            if (!navigator.geolocation){
+              alert('Geolocalización no soportada por tu navegador.');
+              startBtn.disabled = false;
+              return;
+            }
+
+            navigator.geolocation.getCurrentPosition(function(pos){
+            startCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+            coordsText.textContent = startCoords.lat.toFixed(6) + ', ' + startCoords.lon.toFixed(6);
+            gpsStatus.innerHTML = 'Coordenada inicial tomada: <strong>' + coordsText.textContent + '</strong>';
+
+            // start 10s countdown
+            let remaining = 10;
+            gpsStatus.innerHTML += '<div id="gpsCountdown" style="margin-top:6px; font-weight:700; color:#ffd700;">Cuenta atrás: ' + remaining + ' s</div>';
+            countdownInterval = setInterval(() => {
+              remaining -= 1;
+              const cd = document.getElementById('gpsCountdown');
+              if (cd) cd.textContent = 'Cuenta atrás: ' + remaining + ' s';
+            }, 1000);
+
+            timer = setTimeout(() => {
+              // stop countdown
+              clearTimers();
+              gpsStatus.innerHTML = 'Calculando distancia actual...';
+
+              navigator.geolocation.getCurrentPosition(function(curr){
+                const meters = haversine(startCoords.lat, startCoords.lon, curr.coords.latitude, curr.coords.longitude);
+                distanceText.textContent = meters.toFixed(1);
+                distanceResult.style.display = 'block';
+                gpsStatus.style.display = 'block';
+                if (meters >= 30) {
+                  alert('¡CORRECTO! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 30 m).');
+                } else {
+                  alert('ERROR (no alcanzaste 30 m). Estás a ' + meters.toFixed(1) + ' m.');
+                }
+                startBtn.disabled = false;
+              }, function(err){
+                alert('No se pudo obtener la ubicación actual: ' + (err.message || err.code));
+                startBtn.disabled = false;
+                clearTimers();
+              }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+
+            }, 10000);
+
+            }, function(err){
+              alert('No se pudo obtener la coordenada inicial: ' + (err.message || err.code));
+              startBtn.disabled = false;
+              clearTimers();
+            }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+          });
+        }
+
+      })();
+  </script>
+</body>
+</html>
