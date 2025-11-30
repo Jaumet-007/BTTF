@@ -122,25 +122,17 @@
         <p>Quan estiguis a punt de córrer, prem <strong>ACTIVAR GPS</strong> i CORRE! només son 10 segons.</p>
       </div>
 
-      <div class="video-frame" aria-label="video frame">
+      <div class="video-frame" aria-label="video frame" style="display:block;">
+        <!-- 
         <div class="video-wrap">
           <video id="doc1Video" src="love01.mp4" controls playsinline preload="metadata" style="width:100%; height:100%; display:block; background:#000;" tabindex="0">Tu navegador no soporta el elemento video.</video>
-        </div>
+        </div> -->
         <!-- GPS controls for this phase: only INICIO button used -->
         <div id="gpsControls" class="answer-buttons" aria-hidden="false" style="display:flex; flex-direction:column; gap:8px; margin-top:14px; align-items:center; position:relative;">
           <button id="startGpsBtn" class="answer-btn" aria-label="ACTIVAR GPS">ACTIVAR GPS</button>
           <div id="gpsStatus" style="font-weight:800; color:#ffd700; display:none;">Coordenada inicial: <span id="coordsText"></span></div>
           <div id="distanceResult" style="font-weight:900; color:#ffcccb; display:none;">Distancia: <span id="distanceText"></span> m</div>
-          <!-- overlay shown when ACTIVAR GPS is pressed. centered image + PERMETRE button -->
-          <div id="gpsOverlay" style="display:none; position:absolute; inset:0; z-index:999; justify-content:center; align-items:center; background:rgba(0,0,0,0.6);">
-            <div style="text-align:center; max-width:80%;">
-              <img src="gps.jpg" alt="gps" style="max-width:320px; width:80%; height:auto; display:block; margin:0 auto 12px; border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,0.6);"/>
-              <div style="display:flex; gap:10px; justify-content:center; align-items:center; flex-direction:column;">
-                <button id="permitBtn" class="answer-btn" style="padding:10px 22px;">PERMETRE</button>
-                <div style="color:#ffd700; font-weight:700; margin-top:8px;">Prem <strong>PERMETRE</strong> i comença a córrer — només 10 segons</div>
-              </div>
-            </div>
-          </div>
+          <!-- overlay removed per request: clicking ACTIVAR GPS will directly request location permission -->
         </div>
       </div>
     </div>
@@ -197,66 +189,58 @@
         if (!startBtn) return; // nothing to do
 
         startBtn.addEventListener('click', function(){
-          // show the overlay with the gps image and the PERMETRE action
-          const overlay = document.getElementById('gpsOverlay');
-          if (overlay) overlay.style.display = 'flex';
-          // temporarily disable the start button to prevent duplicates
+          // directly request geolocation permission and start the capture/countdown
           startBtn.disabled = true;
           distanceResult.style.display = 'none';
-        });
+          gpsStatus.style.display = 'block';
+          gpsStatus.textContent = 'Obteniendo coordenada inicial...';
 
-        // PERMIT action: triggered when user presses PERMETRE on overlay
-        const permitBtn = document.getElementById('permitBtn');
-        if (permitBtn) {
-          permitBtn.addEventListener('click', function(){
-            // hide overlay and proceed with geolocation capture
-            const overlay = document.getElementById('gpsOverlay');
-            if (overlay) overlay.style.display = 'none';
-            gpsStatus.style.display = 'block';
-            gpsStatus.textContent = 'Obteniendo coordenada inicial...';
+          if (!navigator.geolocation){
+            alert('Geolocalización no soportada por tu navegador.');
+            startBtn.disabled = false;
+            return;
+          }
 
-            if (!navigator.geolocation){
-              alert('Geolocalización no soportada por tu navegador.');
-              startBtn.disabled = false;
-              return;
-            }
-
-            navigator.geolocation.getCurrentPosition(function(pos){
+          navigator.geolocation.getCurrentPosition(function(pos){
             startCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
             coordsText.textContent = startCoords.lat.toFixed(6) + ', ' + startCoords.lon.toFixed(6);
             gpsStatus.innerHTML = 'Coordenada inicial tomada: <strong>' + coordsText.textContent + '</strong>';
 
-            // start 10s countdown
+            // start 10s countdown and open a watchPosition so we don't request permission twice
             let remaining = 10;
-            gpsStatus.innerHTML += '<div id="gpsCountdown" style="margin-top:6px; font-weight:700; color:#ffd700;">Cuenta atrás: ' + remaining + ' s</div>';
+            gpsStatus.innerHTML += `<div id="gpsCountdown" style="margin-top:6px; font-weight:700; color:#ffd700;">Cuenta atrás: ${remaining} s</div>`;
             countdownInterval = setInterval(() => {
               remaining -= 1;
               const cd = document.getElementById('gpsCountdown');
               if (cd) cd.textContent = 'Cuenta atrás: ' + remaining + ' s';
             }, 1000);
 
+            // Use watchPosition for continuous updates during the 10s window so browsers don't re-prompt.
+            let lastPosition = { lat: startCoords.lat, lon: startCoords.lon };
+            const watchId = navigator.geolocation.watchPosition(function(curr){
+              lastPosition = { lat: curr.coords.latitude, lon: curr.coords.longitude };
+            }, function(err){
+              // ignore transient errors while watching
+            }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+
             timer = setTimeout(() => {
               // stop countdown
               clearTimers();
               gpsStatus.innerHTML = 'Calculando distancia actual...';
 
-              navigator.geolocation.getCurrentPosition(function(curr){
-                const meters = haversine(startCoords.lat, startCoords.lon, curr.coords.latitude, curr.coords.longitude);
-                distanceText.textContent = meters.toFixed(1);
-                distanceResult.style.display = 'block';
-                gpsStatus.style.display = 'block';
-                if (meters >= 30) {
-                  alert('¡CORRECTO! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 30 m).');
-                } else {
-                  alert('ERROR (no alcanzaste 30 m). Estás a ' + meters.toFixed(1) + ' m.');
-                }
-                startBtn.disabled = false;
-              }, function(err){
-                alert('No se pudo obtener la ubicación actual: ' + (err.message || err.code));
-                startBtn.disabled = false;
-                clearTimers();
-              }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-
+              // compute distance using lastPosition (from the watch)
+              const meters = haversine(startCoords.lat, startCoords.lon, lastPosition.lat, lastPosition.lon);
+              distanceText.textContent = meters.toFixed(1);
+              distanceResult.style.display = 'block';
+              gpsStatus.style.display = 'block';
+              if (meters >= 30) {
+                alert('¡CORRECTO! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 30 m).');
+              } else {
+                alert('ERROR (no alcanzaste 30 m). Estás a ' + meters.toFixed(1) + ' m.');
+              }
+              // clear the watch we started
+              try { if (watchId != null) navigator.geolocation.clearWatch(watchId); } catch (e) {}
+              startBtn.disabled = false;
             }, 10000);
 
             }, function(err){
@@ -265,7 +249,6 @@
               clearTimers();
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
           });
-        }
 
       })();
   </script>
