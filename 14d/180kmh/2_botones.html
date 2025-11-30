@@ -568,17 +568,11 @@ function victory(){
     msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(2,6,23,0.92);color:#fff;padding:18px 22px;border-radius:12px;font-size:18px;font-weight:800;z-index:100000;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.6);backdrop-filter: blur(6px);';
     msg.innerHTML = 'SI! HAS VIATJAT a <span style="color:#ffd166">"HILL BADALONEY"</span> de <strong>1955</strong>';
     document.body.appendChild(msg);
-    // Animación de entrada
+    // Animación de entrada (permanece visible indefinidamente)
     msg.style.opacity = '0';
     msg.style.transition = 'opacity 240ms ease, transform 240ms ease';
     msg.style.transform = 'translate(-50%,-48%) scale(0.98)';
     requestAnimationFrame(()=>{ msg.style.opacity='1'; msg.style.transform='translate(-50%,-50%) scale(1)'; });
-    // Desaparece tras 3.5s
-    setTimeout(()=>{
-      msg.style.opacity='0';
-      msg.style.transform = 'translate(-50%,-52%) scale(0.98)';
-      setTimeout(()=>msg.remove(), 9000);
-    }, 3500);
   })();
 
   // Efecto de huellas de fuego del Delorean
