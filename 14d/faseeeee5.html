@@ -42,6 +42,17 @@
     }
 
     #countdown.show { display:block; }
+    
+    /* Animaciones para el texto de victoria */
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.1); }
+    }
+    
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 10px rgba(255,215,0,1), 0 0 20px rgba(255,102,0,1), 0 0 30px rgba(255,0,0,0.8); }
+      50% { text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,102,0,1), 0 0 60px rgba(255,0,0,1), 0 0 80px rgba(255,215,0,0.8); }
+    }
 
     #phaseLinks{
       position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
@@ -107,19 +118,19 @@
     <div style="text-align:center; padding:12px 10px;">
       <!-- instrucciones adaptadas al ancho del fondo -->
       <div class="instructions" role="region" aria-label="instruccions doc">
-        <p>Ets al punt de no-retorn.</p>
+        <p>Estás en el punto de no retorno.</p>
 
-        <p>Has d'accelerar a 180km/h i tornar al futur.</p>
+        <p>Tienes que acelerar a 140km/h y volver al futuro.</p>
 
-        <p>Abans de moure't, Prem el botó <strong>"ACTIVAR GPS"</strong>. quan aparegui:</p>
+        <p>Antes de moverte, busca un lugar recto donde puedas correr.<br>
+        Necesitarás al menos 80 metros de espacio delante tuyo. <br>
+        Pulsa el botón <strong>"ACTIVAR GPS"</strong> y aparecerá algo parecido a esto:</p>
         <p style="text-align:center; margin:8px 0;">
           <img src="gps.jpg" alt="gps" style="max-width:360px; width:70%; height:auto; display:block; margin:0 auto; border-radius:8px; box-shadow:0 6px 22px rgba(0,0,0,0.6);" />
         </p>
-        <p>prem <strong>PERMETRE</strong> i comença a córrer per, en menys de 10 segons estar a 30 metres del punt inicial.</p>
+        <p>Cuando pulses <strong>PERMITIR</strong>, CORRE MUCHOOO! corre para, en menos de 10 segundos estar a 30 metros del punto inicial.</p>
 
-        <p>Si ho fas, el Delorean arribarà als 180 km/h i tornaràs a la teva època.</p>
-
-        <p>Quan estiguis a punt de córrer, prem <strong>ACTIVAR GPS</strong> i CORRE! només son 10 segons.</p>
+        <p>Si lo haces, el Delorean llegará a 140 km/h y volverás a tu época.</p>
       </div>
 
       <div class="video-frame" aria-label="video frame" style="display:block;">
@@ -135,6 +146,24 @@
           <!-- overlay removed per request: clicking ACTIVAR GPS will directly request location permission -->
         </div>
       </div>
+
+      <!-- Texto de victoria con efectos espectaculares (fuera del videoFinalFrame) -->
+      <div id="victoryText" style="display:none; position:fixed; top:80px; left:50%; transform:translateX(-50%); width:90%; max-width:440px; text-align:center; z-index:16000; font-family:'Orbitron',monospace; font-size:32px; font-weight:900; text-transform:uppercase; color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,1), 0 0 20px rgba(255,102,0,1), 0 0 30px rgba(255,0,0,0.8); animation:pulse 1.5s ease-in-out infinite, glow 2s ease-in-out infinite; background:rgba(0,0,0,0.7); padding:20px; border-radius:15px; border:3px solid rgba(255,102,0,0.8);">
+        ¡CONSEGUIDO!<br>
+        <span style="font-size:22px; display:block; margin-top:8px; color:#fff; text-shadow:0 0 8px rgba(255,215,0,0.9), 0 0 15px rgba(255,102,0,0.7);">Observa el final de TU historia</span>
+      </div>
+
+      <!-- Video final embebido (oculto inicialmente) -->
+      <div id="videoFinalFrame" style="display:none; position:fixed; top:260px; left:50%; transform:translateX(-50%); width:92%; max-width:420px; z-index:15000;">
+        <div style="position:relative; width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#000; border:3px solid rgba(255,102,0,0.65); box-shadow:0 0 22px rgba(255,102,0,0.55);">
+          <video id="finalVideo" src="final.mp4" controls playsinline preload="metadata" style="width:100%; height:100%; display:block; background:#000;" tabindex="0">
+            Tu navegador no soporta el elemento video.
+          </video>
+        </div>
+      </div>
+      
+      <!-- Canvas para confetti -->
+      <canvas id="confettiCanvas" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:14999;"></canvas>
     </div>
   </main>
 
@@ -180,6 +209,7 @@
         let startCoords = null;
         let timer = null;
         let countdownInterval = null;
+        let themeAudio = null;
 
         function toRad(n){ return n * Math.PI / 180; }
         function haversine(lat1, lon1, lat2, lon2){
@@ -191,13 +221,17 @@
           return R * c;
         }
 
-        function clearTimers(){ if (timer) { clearTimeout(timer); timer = null; } if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; } }
+        function clearTimers(){ 
+          if (timer) { clearTimeout(timer); timer = null; } 
+          if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+        }
 
         if (!startBtn) return; // nothing to do
 
         startBtn.addEventListener('click', function(){
           // directly request geolocation permission and start the capture/countdown
           startBtn.disabled = true;
+          startBtn.style.display = 'none'; // Hide button
           distanceResult.style.display = 'none';
           gpsStatus.style.display = 'block';
           gpsStatus.textContent = 'Obteniendo coordenada inicial...';
@@ -211,15 +245,20 @@
           navigator.geolocation.getCurrentPosition(function(pos){
             startCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
             coordsText.textContent = startCoords.lat.toFixed(6) + ', ' + startCoords.lon.toFixed(6);
-            gpsStatus.innerHTML = 'Coordenada inicial tomada: <strong>' + coordsText.textContent + '</strong>';
+            gpsStatus.innerHTML = 'Coordenada inicial tomada. CORREEEE! <strong>' // + coordsText.textContent + '</strong>';
+
+            // Start playing theme.mp3
+            themeAudio = new Audio('speed.mp3');
+            themeAudio.loop = false;
+            themeAudio.play().catch(err => console.log('Error playing audio:', err));
 
             // start 10s countdown and open a watchPosition so we don't request permission twice
             let remaining = 10;
-            gpsStatus.innerHTML += `<div id="gpsCountdown" style="margin-top:6px; font-weight:700; color:#ffd700;">Cuenta atrás: ${remaining} s</div>`;
+            gpsStatus.innerHTML += `<div id="gpsCountdown" style="margin-top:12px; font-weight:900; font-size:120px; color:#ffd700; text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,102,0,1);">${remaining}</div>`;
             countdownInterval = setInterval(() => {
               remaining -= 1;
               const cd = document.getElementById('gpsCountdown');
-              if (cd) cd.textContent = 'Cuenta atrás: ' + remaining + ' s';
+              if (cd) cd.textContent = remaining;
             }, 1000);
 
             // Use watchPosition for continuous updates during the 10s window so browsers don't re-prompt.
@@ -231,7 +270,7 @@
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
 
             timer = setTimeout(() => {
-              // stop countdown
+              // stop countdown and audio
               clearTimers();
               gpsStatus.innerHTML = 'Calculando distancia actual...';
 
@@ -241,9 +280,11 @@
               distanceResult.style.display = 'block';
               gpsStatus.style.display = 'block';
               if (meters >= 30) {
-                alert('¡CORRECTO! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 30 m).');
+                // alert('¡BIEEEN! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 30 m).');
+                // Show video modal
+                showFinalVideo(meters);
               } else {
-                alert('ERROR (no alcanzaste 30 m). Estás a ' + meters.toFixed(1) + ' m.');
+                alert('OH NO! No llegaste! solo recorriste: ' + meters.toFixed(1) + ' m.');
               }
               // clear the watch we started
               try { if (watchId != null) navigator.geolocation.clearWatch(watchId); } catch (e) {}
@@ -256,6 +297,82 @@
               clearTimers();
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
           });
+
+        function showFinalVideo(  distanceMeters) {
+          const videoFrame = document.getElementById('videoFinalFrame');
+          const video = document.getElementById('finalVideo');
+          const confettiCanvas = document.getElementById('confettiCanvas');
+          const victoryText = document.getElementById('victoryText');
+
+          // Hide instructions and GPS image
+          const instructions = document.querySelector('.instructions');
+          if (instructions) instructions.style.display = 'none';
+
+          // Show victory text, video frame and confetti
+          victoryText.textContent = `¡CONSEGUIDO!\nEstás a ${distanceMeters.toFixed(1)} m de la coordenada inicial`;
+          victoryText.style.display = 'block';
+          videoFrame.style.display = 'block';
+          confettiCanvas.style.display = 'block';
+          
+          // Start confetti animation
+          startConfetti(confettiCanvas);
+          
+          // Play video
+          video.currentTime = 0;
+          video.play().catch(err => console.log('Error al reproducir video:', err));
+        }
+        
+        function startConfetti(canvas) {
+          const ctx = canvas.getContext('2d');
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          
+          const particles = [];
+          const colors = ['#ffd700', '#ff6600', '#ff0000', '#00d4ff', '#fff', '#ffed4e'];
+          
+          // Create particles
+          for (let i = 0; i < 150; i++) {
+            particles.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * canvas.height - canvas.height,
+              w: Math.random() * 10 + 5,
+              h: Math.random() * 10 + 5,
+              vx: Math.random() * 4 - 2,
+              vy: Math.random() * 3 + 2,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              rotation: Math.random() * 360,
+              rotationSpeed: Math.random() * 10 - 5
+            });
+          }
+          
+          function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach((p, index) => {
+              ctx.save();
+              ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+              ctx.rotate((p.rotation * Math.PI) / 180);
+              ctx.fillStyle = p.color;
+              ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              ctx.restore();
+              
+              p.x += p.vx;
+              p.y += p.vy;
+              p.rotation += p.rotationSpeed;
+              
+              // Reset particle when it goes off screen
+              if (p.y > canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * canvas.width;
+              }
+            });
+            
+            requestAnimationFrame(animate);
+          }
+          
+          animate();
+        }
+
 
       })();
   </script>
