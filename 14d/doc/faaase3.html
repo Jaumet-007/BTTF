@@ -87,11 +87,11 @@
   <div id="countdown"></div>
 
   <div id="phaseLinks">
-    <a href="#" class="phase-link" data-phase="1" data-key="ZmFzZTE=">Fase_1</a>
-    <a href="#" class="phase-link" data-phase="2" data-key="cXVhbg==">Fase_2</a>
-    <a href="#" class="phase-link" data-phase="3" data-key="bGE=">Fase_3</a>
-    <a href="#" class="phase-link" data-phase="4" data-key="bXVudGFueWE=">Fase_4</a>
-    <a href="#" class="phase-link" data-phase="5" data-key="Y2F1">Fase_5</a>
+    <a href="#" class="phase-link" data-phase="1" data-key="">Fase_1</a>
+    <a href="#" class="phase-link" data-phase="2" data-key="MTQwS01I">Fase_2</a>
+    <a href="#" class="phase-link" data-phase="3" data-key="U0FORE1BTjE5NTU=">Fase_3</a>
+    <a href="#" class="phase-link" data-phase="4" data-key="RkVSTUFY">Fase_4</a>
+    <a href="#" class="phase-link" data-phase="5" data-key="TE9WRTE5NTU=">Fase_5</a>
   </div>
 
   <div class="btf-glow"></div>
@@ -103,21 +103,34 @@
     <div style="text-align:center; padding:12px 10px;">
       <!-- instrucciones adaptadas al ancho del fondo -->
       <div class="instructions" role="region" aria-label="instruccions doc">
-        <p>Només hi ha una persona en aquesta època que et pot ajudar a tornar a casa. Aquest és el teu amic <strong>Emmet Brown ('Doc')</strong>; li hauràs de demostrar que ets qui dius i convèncer-lo per tornar.</p>
+        <p>Solo hay una persona en esta época que te puede ayudar a volver a casa. Este es tu amigo <strong>Emmet Brown ('Doc')</strong>; tendrás que demostrarle que eres quien dices y convencerlo para volver.</p>
 
-        <p>Mira el vídeo i respon a la seva pregunta per correu electrònic.</p>
+        <p>Mira el vídeo y responde a su pregunta por correo electrónico.</p>
 
-        <p><strong>Destinatari:</strong> dr.emmett.brown.hill.valley@gmail.com<br>
-        <strong>Títol:</strong> Hauràs d'escriure les 2 paraules que formen la resposta<br>
-        <strong>Contingut:</strong> Li pots escriure a Doc el missatge que vulguis</p>
+        <p><strong>Destinatario:</strong> dr.emmett.brown.hill.valley@gmail.com<br>
+        <strong>Título:</strong> Tendrás que escribir las 2 palabras que forman la respuesta<br>
+        <strong>Contenido:</strong> Puedes escribirle a Doc el mensaje que quieras</p>
 
-        <p>Si ho fas bé, Doc et respondrà de seguida, estigues atent al que et digui.</p>
+        <p>Si lo haces bien, Doc te responderá enseguida, está atento a lo que te diga.</p>
+      </div>
+
+      <div style="text-align:center; margin-bottom:15px;">
+        <button id="notPlayingBtn" style="padding:12px 24px; font-family:'Orbitron', monospace; font-size:14px; font-weight:700; color:#000; background:linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%); border:3px solid #ff6600; border-radius:8px; cursor:pointer; box-shadow:0 0 15px rgba(255,102,0,0.7);">
+          Pulsa si no estás jugando en la calle
+        </button>
       </div>
 
       <div class="video-frame" aria-label="video frame">
         <div class="video-wrap">
           <video id="doc1Video" src="doc1.mp4" controls playsinline preload="metadata" style="width:100%; height:100%; display:block; background:#000;" tabindex="0">Tu navegador no soporta el elemento video.</video>
         </div>
+      </div>
+
+      <div id="extraInfo" style="display:none; max-width:420px; margin:15px auto 0; background:rgba(11,18,33,0.35); padding:12px 14px; border-radius:10px; border:2px solid rgba(255,102,0,0.18); box-shadow:0 8px 36px rgba(0,0,0,0.45); text-align:left; line-height:1.6; font-size:13px; color:#fff;">
+        <p style="margin:0 0 8px;">• Si estás lejos de la coordenada esta fase es muchísimo más difícil...</p>
+        <p style="margin:0 0 8px;">• ... Aunque se ha comprobado que se puede hacer si eres hábil.</p>
+        <p style="margin:0 0 8px;">• Para la última pregunta necesitarás esta lista:</p>
+        <p style="margin:0;">• Lista: <a href="palabras.html" style="color:#ffd700; font-weight:700; text-decoration:underline;">palabras.html</a></p>
       </div>
     </div>
   </main>
@@ -126,18 +139,31 @@
   <script>
     // This page doesn't use the start button; pageContent is visible by default.
 
+    // Handle "not playing in the street" button
+    document.getElementById('notPlayingBtn').addEventListener('click', function() {
+      document.getElementById('extraInfo').style.display = 'block';
+      this.style.display = 'none';
+    });
+
     // Phase links keep the base64-password pattern from original files
     document.querySelectorAll('.phase-link').forEach(link => {
       link.addEventListener('click', function(e){
         e.preventDefault();
         const phase = this.dataset.phase;
         const encodedKey = this.dataset.key;
-        const userPassword = prompt('Introdueix la contrasenya:');
-        if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
+        
+        // Fase 1 sin contraseña
+        if (phase === '1') {
+          window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','bG92ZS9mYXNzc3NlNC5odG1s','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
+          return;
+        }
+        
+        const userPassword = prompt('Introduce la contraseña:');
+        if (userPassword && btoa(userPassword.toUpperCase()) === encodedKey) {
           // By default, redirect to decoded path
           window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','bG92ZS9mYXNzc3NlNC5odG1s','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
         } else if (userPassword) {
-          alert('Contrasenya incorrecta!');
+          alert('¡Contraseña incorrecta!');
         }
       });
     });

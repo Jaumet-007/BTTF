@@ -644,18 +644,18 @@
 </head>
 <body>
     <!-- Botón de inicio -->
-    <button id="startBtn">COMENÇAR!</button>
+    <button id="startBtn">¡EMPEZAR!</button>
 
     <!-- Contador -->
     <div id="countdown"></div>
 
     <!-- Links de fases -->
     <div id="phaseLinks">
-        <a href="#" class="phase-link" data-phase="1" data-key="ZmFzZTE=">Fase_1</a>
-        <a href="#" class="phase-link" data-phase="2" data-key="cXVhbg==">Fase_2</a>
-        <a href="#" class="phase-link" data-phase="3" data-key="bGE=">Fase_3</a>
-        <a href="#" class="phase-link" data-phase="4" data-key="bXVudGFueWE=">Fase_4</a>
-        <a href="#" class="phase-link" data-phase="5" data-key="Y2F1">Fase_5</a>
+        <a href="#" class="phase-link" data-phase="1" data-key="">Fase_1</a>
+        <a href="#" class="phase-link" data-phase="2" data-key="MTQwS01I">Fase_2</a>
+        <a href="#" class="phase-link" data-phase="3" data-key="U0FORE1BTjE5NTU=">Fase_3</a>
+        <a href="#" class="phase-link" data-phase="4" data-key="RkVSTUFY">Fase_4</a>
+        <a href="#" class="phase-link" data-phase="5" data-key="TE9WRTE5NTU=">Fase_5</a>
     </div>
 
     <!-- Contenido principal oculto inicialmente -->
@@ -933,9 +933,21 @@
                 
                 const phase = this.dataset.phase;
                 const encodedKey = this.dataset.key;
-                const userPassword = prompt('Introdueix la contrasenya:');
                 
-                if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
+                // Fase 1 sin contraseña
+                if (phase === '1') {
+                    const dest = atob(_0x3f9d[phase - 1]);
+                    if (/^https?:\/\//i.test(dest)) {
+                        window.location.href = dest;
+                    } else {
+                        window.location.href = '../' + dest;
+                    }
+                    return;
+                }
+                
+                const userPassword = prompt('Introduce la contraseña:');
+                
+                if (userPassword && btoa(userPassword.toUpperCase()) === encodedKey) {
                     const dest = atob(_0x3f9d[phase - 1]);
                     // si es URL absoluta (http/https) usamos directamente
                     if (/^https?:\/\//i.test(dest)) {
@@ -944,7 +956,7 @@
                         window.location.href = '../' + dest;
                     }
                 } else if (userPassword) {
-                    alert('Contrasenya incorrecta!');
+                    alert('¡Contraseña incorrecta!');
                 }
             });
         });
