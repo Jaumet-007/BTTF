@@ -908,15 +908,13 @@
         */
 
         // Manejar los links de fases
-        // Destinos codificados (base64). Si el destino final es absoluto (http/https)
-        // lo dejamos codificado igualmente aquí como 'encrypted' y la función
-        // lo usará tal cual.
+        // Destinos codificados (base64) desde subdirectorio sandman/
         const _0x3f9d = [
-            'aW5kZXguaHRtbA==',
-            'c2FuZG1hbi9mZmFzZTIuaHRtbA==',
-            'aHR0cHM6Ly9qYXVtZXQtMDA3LmdpdGh1Yi5pby9CVFRGLzE0ZC9kb2MvZmFhYXNlMy5odG1s',
-            'bG92ZS9mYXNzc3NlNC5odG1s',
-            'ZmFzZWVlZWU1Lmh0bWw='
+            'Li4vaW5kZXguaHRtbA==',
+            'Li4vc2FuZG1hbi9mZmFzZTIuaHRtbA==',
+            'Li4vZG9jL2ZhYWFzZTMuaHRtbA==',
+            'Li4vbG92ZS9mYXNzc3NlNC5odG1s',
+            'Li4vZmFzZWVlZWU1Lmh0bWw='
         ];
         
         document.querySelectorAll('.phase-link').forEach(link => {
@@ -928,25 +926,14 @@
                 
                 // Fase 1 sin contraseña
                 if (phase === '1') {
-                    const dest = atob(_0x3f9d[phase - 1]);
-                    if (/^https?:\/\//i.test(dest)) {
-                        window.location.href = dest;
-                    } else {
-                        window.location.href = '../' + dest;
-                    }
+                    window.location.href = atob(_0x3f9d[phase - 1]);
                     return;
                 }
                 
                 const userPassword = prompt('Introduce la palabra que te dió la fase 1 (minúscula):');
                 
                 if (userPassword && btoa(userPassword.toUpperCase()) === encodedKey) {
-                    const dest = atob(_0x3f9d[phase - 1]);
-                    // si es URL absoluta (http/https) usamos directamente
-                    if (/^https?:\/\//i.test(dest)) {
-                        window.location.href = dest;
-                    } else {
-                        window.location.href = '../' + dest;
-                    }
+                    window.location.href = atob(_0x3f9d[phase - 1]);
                 } else if (userPassword) {
                     alert('¡Contraseña incorrecta!');
                 }

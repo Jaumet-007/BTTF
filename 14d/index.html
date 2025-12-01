@@ -832,11 +832,8 @@
 
     // Manejar los links de fases
     // Destinos codificados (base64). Mantengo la estructura codificada.
-    // Reemplacé la entrada de fase 3 por la URL absoluta codificada en base64
-    // https://jaumet-007.github.io/BTTF/14d/faaase3.html
-    // Destinos codificados (base64). La entrada de Fase_3 apunta ahora a
-    // https://jaumet-007.github.io/BTTF/14d/doc/faaase3.html (en base64)
-    const _0x3f9d = ['aW5kZXguaHRtbA==', 'c2FuZG1hbi9mZmFzZTIuaHRtbA==', 'aHR0cHM6Ly9qYXVtZXQtMDA3LmdpdGh1Yi5pby9CVFRGLzE0ZC9kb2MvZmFhYXNlMy5odG1s', 'bG92ZS9mYXNzc3NlNC5odG1s', 'ZmFzZWVlZWU1Lmh0bWw='];
+    // Destinos codificados (base64) desde directorio base
+    const _0x3f9d = ['aW5kZXguaHRtbA==', 'c2FuZG1hbi9mZmFzZTIuaHRtbA==', 'ZG9jL2ZhYWFzZTMuaHRtbA==', 'bG92ZS9mYXNzc3NlNC5odG1s', 'ZmFzZWVlZWU1Lmh0bWw='];
     
     document.querySelectorAll('.phase-link').forEach(link => {
       link.addEventListener('click', function(e) {
