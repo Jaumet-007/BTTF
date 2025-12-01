@@ -128,7 +128,7 @@
         <p style="text-align:center; margin:8px 0;">
           <img src="gps.jpg" alt="gps" style="max-width:360px; width:70%; height:auto; display:block; margin:0 auto; border-radius:8px; box-shadow:0 6px 22px rgba(0,0,0,0.6);" />
         </p>
-        <p>Cuando pulses <strong>PERMITIR</strong>, CORRE MUCHOOO! corre para, en menos de 10 segundos estar a 30 metros del punto inicial.</p>
+        <p>Cuando pulses <strong>PERMITIR</strong>, CORRE MUCHOOO! corre para, en menos de 10 segundos estar a 50 metros del punto inicial.</p>
 
         <p>Si lo haces, el Delorean llegará a 140 km/h y volverás a tu época.</p>
       </div>
@@ -148,9 +148,9 @@
       </div>
 
       <!-- Texto de victoria con efectos espectaculares (fuera del videoFinalFrame) -->
-      <div id="victoryText" style="display:none; position:fixed; top:80px; left:50%; transform:translateX(-50%); width:90%; max-width:440px; text-align:center; z-index:16000; font-family:'Orbitron',monospace; font-size:32px; font-weight:900; text-transform:uppercase; color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,1), 0 0 20px rgba(255,102,0,1), 0 0 30px rgba(255,0,0,0.8); animation:pulse 1.5s ease-in-out infinite, glow 2s ease-in-out infinite; background:rgba(0,0,0,0.7); padding:20px; border-radius:15px; border:3px solid rgba(255,102,0,0.8);">
+      <div id="victoryText" style="display:none; position:fixed; top:80px; left:50%; transform:translateX(-50%); width:90%; max-width:440px; text-align:center; z-index:16000; font-family:'Orbitron',monospace; font-size:26px; font-weight:900; text-transform:uppercase; color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,1), 0 0 20px rgba(255,102,0,1), 0 0 30px rgba(255,0,0,0.8); animation:pulse 1.5s ease-in-out infinite, glow 2s ease-in-out infinite; background:rgba(0,0,0,0.7); padding:20px; border-radius:15px; border:3px solid rgba(255,102,0,0.8);">
         ¡CONSEGUIDO!<br>
-        <span style="font-size:22px; display:block; margin-top:8px; color:#fff; text-shadow:0 0 8px rgba(255,215,0,0.9), 0 0 15px rgba(255,102,0,0.7);">Observa el final de TU historia</span>
+        <span style="font-size:18px; display:block; margin-top:8px; color:#fff; text-shadow:0 0 8px rgba(255,215,0,0.9), 0 0 15px rgba(255,102,0,0.7);">Observa el final de TU historia</span>
       </div>
 
       <!-- Video final embebido (oculto inicialmente) -->
@@ -159,6 +159,10 @@
           <video id="finalVideo" src="final.mp4" controls playsinline preload="metadata" style="width:100%; height:100%; display:block; background:#000;" tabindex="0">
             Tu navegador no soporta el elemento video.
           </video>
+        </div>
+        <!-- Palabra Adventure Lab -->
+        <div id="adventureLabPassword" style="margin-top:15px; text-align:center; font-family:'Orbitron',monospace; font-size:16px; font-weight:700; color:#ffd700; text-shadow:0 0 8px rgba(255,215,0,0.8); background:rgba(11,18,33,0.6); padding:12px; border-radius:8px; border:2px solid rgba(255,102,0,0.5);">
+          Palabra Adventure Lab: <span id="labWord"></span>
         </div>
       </div>
       
@@ -170,6 +174,12 @@
   <!-- Example small snippet showing how pages using the template can hook into the start button -->
   <script>
     // This page doesn't use the start button; pageContent is visible by default.
+    
+    // Decrypt Adventure Lab password
+    function decryptLabWord() {
+      const encrypted = 'cmVncmVzbyBhbCBmdXR1cm8=';
+      return atob(encrypted);
+    }
 
     // Phase links keep the base64-password pattern from original files
     document.querySelectorAll('.phase-link').forEach(link => {
@@ -279,8 +289,8 @@
               distanceText.textContent = meters.toFixed(1);
               distanceResult.style.display = 'block';
               gpsStatus.style.display = 'block';
-              if (meters >= 30) {
-                // alert('¡BIEEEN! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 30 m).');
+              if (meters >= 50) {
+                // alert('¡BIEEEN! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 50 m).');
                 // Show video modal
                 showFinalVideo(meters);
               } else {
@@ -309,10 +319,18 @@
           if (instructions) instructions.style.display = 'none';
 
           // Show victory text, video frame and confetti
-          victoryText.textContent = `¡CONSEGUIDO!\nEstás a ${distanceMeters.toFixed(1)} m de la coordenada inicial`;
+          const speedKmH = ((distanceMeters / 10) * 3.6) + 130;
+          const speedHuman = ((distanceMeters / 10) * 3.6);
+          victoryText.innerHTML = `<div style="color:#ffd700;">¡SÍÍÍ! CONSEGUIDO!</div><div style="font-size:20px; margin-top:8px; color:#fff;">Con tus ${speedHuman.toFixed(1)}km/h El Delorian ha llegado a ${speedKmH.toFixed(1)} km/h.</div><div style="font-size:18px; margin-top:8px; color:#87CEEB; text-shadow:0 0 8px rgba(135,206,235,0.9), 0 0 15px rgba(135,206,235,0.7);">Disfruta este video final:</div>`;
           victoryText.style.display = 'block';
           videoFrame.style.display = 'block';
           confettiCanvas.style.display = 'block';
+          
+          // Show Adventure Lab password
+          const labWordElement = document.getElementById('labWord');
+          if (labWordElement) {
+            labWordElement.textContent = decryptLabWord();
+          }
           
           // Start confetti animation
           startConfetti(confettiCanvas);

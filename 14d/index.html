@@ -742,12 +742,20 @@
     </p>
     <p>Si llegáis a 140km/h... ¡Algo pasará!</p>
     <p><strong>¡¡Suerte!!</strong></p>
-    <br><br>
     
     <!-- Botón DeLorean -->
     <a href="#" id="deloreanBtn" class="delorean-btn">
       🚗 Saltar al DeLorean 💨
     </a>
+    
+    <!-- Video embebido (oculto inicialmente, aparece en lugar del botón) -->
+    <div id="embeddedVideoContainer" style="display: none; margin: 20px auto; width: 98%; max-width: 420px;">
+      <div style="position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #000; border: 3px solid rgba(255,102,0,0.65); box-shadow: 0 0 22px rgba(255,102,0,0.55);">
+        <video id="embeddedVideo" src="video.mp4" controls playsinline preload="auto" style="width: 100%; height: 100%; display: block; background: #000;" tabindex="0">
+          Tu navegador no soporta el elemento video.
+        </video>
+      </div>
+    </div>
   </div>
   </div> <!-- Cierre de mainContent -->
 
@@ -780,88 +788,46 @@
     });
 
 
-    // Manejar el botón del DeLorean: abrir modal y reproducir local video
+    // Manejar el botón del DeLorean: ocultar botón y botonera, mostrar video
     document.getElementById('deloreanBtn').addEventListener('click', function(e) {
       e.preventDefault();
 
-      const modal = document.getElementById('videoModal');
-      const video = document.getElementById('localVideo');
+      // Ocultar botón DeLorean
+      this.style.display = 'none';
+      
+      // Ocultar botonera inferior
+      document.getElementById('phaseLinks').style.display = 'none';
 
-      // Mostrar modal y reproducir
-      modal.classList.add('show');
-      modal.setAttribute('aria-hidden', 'false');
-      try {
-        video.currentTime = 0;
-        video.play().catch(err => console.log('Reproducción bloqueada o no permitida:', err));
-      } catch (err) {
-        console.log('Error al reproducir el vídeo:', err);
+      // Detener el audio del tema si está sonando
+      const themeAudio = document.getElementById('themeAudio');
+      if (themeAudio && !themeAudio.paused) {
+        themeAudio.pause();
+        themeAudio.currentTime = 0;
       }
 
-      // Importante: NO iniciamos la cuenta atrás aquí. El temporizador
-      // se activa SÓLO cuando el usuario cierra el modal o cuando el
-      // video termina.
+      // Mostrar y reproducir video embebido
+      const embeddedContainer = document.getElementById('embeddedVideoContainer');
+      const embeddedVideo = document.getElementById('embeddedVideo');
+      embeddedContainer.style.display = 'block';
+      embeddedVideo.play().catch(err => console.log('Error al reproducir video embebido:', err));
 
-      // Guard para evitar múltiples ejecuciones de la secuencia final
-      let finishRequested = false;
-
-      // referencia al elemento del contador
-      const countdownEl = document.getElementById('countdown');
-
-      // Inicia la cuenta atrás de 5s que redirige al finalizar
-      const startFinishCountdown = () => {
-        if (finishRequested) return; // ya iniciado
-        finishRequested = true;
-
+      // Cuando el video termine, mostrar contador y redirigir
+      
+       embeddedVideo.addEventListener('ended', function() {
+        const countdownEl = document.getElementById('countdown');
         countdownEl.classList.add('show');
-        let timeLeft = 5;
-        countdownEl.textContent = timeLeft;
+        let timeLeft = 0;
+        countdownEl.textContent = "";//timeLeft;
 
         const interval = setInterval(() => {
           timeLeft--;
-          countdownEl.textContent = timeLeft;
+          countdownEl.textContent = "";//timeLeft;
           if (timeLeft <= 0) {
             clearInterval(interval);
-            try { video.pause(); } catch (e) {}
-            modal.classList.remove('show');
-            modal.setAttribute('aria-hidden', 'true');
-            countdownEl.classList.remove('show');
             window.location.href = '180kmh/2_botones.html';
           }
         }, 1000);
-      };
-
-      // Cerrar modal desde el botón
-      const closeBtn = document.getElementById('videoClose');
-      const closeModal = () => {
-        // Al cerrar manualmente, ocultamos el modal y arrancamos la cuenta atrás
-        try { video.pause(); } catch (e) {}
-        modal.classList.remove('show');
-        modal.setAttribute('aria-hidden', 'true');
-        startFinishCountdown();
-      };
-
-      if (closeBtn) closeBtn.onclick = closeModal;
-
-      // Cerrar al hacer clic fuera del contenedor
-      modal.addEventListener('click', function(ev) {
-        if (ev.target === modal) closeModal();
-      });
-
-      // Cerrar con Escape
-      document.addEventListener('keydown', function escHandler(ev) {
-        if (ev.key === 'Escape') {
-          closeModal();
-          document.removeEventListener('keydown', escHandler);
-        }
-      });
-
-      // Si el video termina, ocultar modal y arrancar la cuenta atrás de 5s
-      video.addEventListener('ended', function() {
-        try { video.pause(); } catch (e) {}
-        modal.classList.remove('show');
-        modal.setAttribute('aria-hidden', 'true');
-        startFinishCountdown();
-      });
+      }); 
     });
 
     // Manejar los links de fases

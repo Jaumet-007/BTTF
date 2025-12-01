@@ -363,12 +363,12 @@
 
 <div class="topbar" style="max-width:500px">
     <div class="card" style="display:flex;flex-direction:column">
-    <h1>Back to the Future — Salt en el temps</h1>
-    <div class="sub">Alterna <-- → -->  fins als <strong>140 km/h</strong> i activaràs el <strong>salt temporal</strong> del Delorean</div>
+    <h1>Back to the Future — Salto en el tiempo</h1>
+    <div class="sub">Alterna <-- → -->  hasta los <strong>140 km/h</strong> y activarás el <strong>salto temporal</strong> del DeLorean</div>
   </div>
   <div style="width:140px;flex-shrink:0">
     <div class="card center">
-      <div class="sub">Intents</div>
+      <div class="sub">Intentos</div>
       <div id="attemptsDisplay" class="big">0</div>
     </div>
   </div>
@@ -377,7 +377,7 @@
 <div class="meter-wrap card">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
     <div>
-      <div class="sub">Velocitat</div>
+      <div class="sub">Velocidad</div>
       <div id="speedDisplay">0.0 km/h</div>
     </div>
     <div style="text-align:right">
@@ -399,9 +399,9 @@
 </div>
 
 <div class="info-row">
-  <div class="mini">Costat: <span id="lastSide">Ninguno</span></div>
-  <div class="mini">Progresió: <span id="progression">x1.00</span></div>
-  <div class="mini">Estat: <span id="state">Llist</span></div>
+  <div class="mini">Lado: <span id="lastSide">Ninguno</span></div>
+  <div class="mini">Progresión: <span id="progression">x1.00</span></div>
+  <div class="mini">Estado: <span id="state">Listo</span></div>
 </div>
 
 <div class="controls">
@@ -547,6 +547,12 @@ function loop(ts){
 
 /* VICTORIA */
 
+// Decrypt Adventure Lab password
+function decryptLabWord() {
+  const encrypted = 'MTQwa21o';
+  return atob(encrypted);
+}
+
 function victory(){
   stateEl.textContent='¡SALTO TEMPORAL ACTIVADO!';
 
@@ -561,12 +567,12 @@ function victory(){
   doFlash();
   spawnConfetti();
 
-  // Mensaje grande y bonito al centro: SI! HAS VIATJAT a "HILL BADALONEY" de 1955
+  
   (function showVictoryMessage(){
     const msg = document.createElement('div');
     msg.id = 'victoryMessage';
     msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(2,6,23,0.92);color:#fff;padding:18px 22px;border-radius:12px;font-size:18px;font-weight:800;z-index:100000;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.6);backdrop-filter: blur(6px);';
-    msg.innerHTML = 'SI! HAS VIATJAT a <span style="color:#ffd166">"HILL BADALONEY"</span> de <strong>1955</strong>';
+    msg.innerHTML = '¡SÍ! HAS VIAJADO a <span style="color:#ffd166">"HILL BADALONEY"</span> de <strong>1955</strong><br>palabra para el lab: ' + decryptLabWord();
     document.body.appendChild(msg);
     // Animación de entrada (permanece visible indefinidamente)
     msg.style.opacity = '0';

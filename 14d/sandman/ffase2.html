@@ -611,22 +611,29 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            padding: 60px 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
             border-radius: 20px;
-            font-size: 3em;
+            font-size: 1.2em;
             font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            color: #ffd700;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255,215,0,0.8), 2px 2px 4px rgba(0,0,0,0.8);
+            box-shadow: 0 0 30px rgba(255,102,0,0.8), 0 20px 60px rgba(0,0,0,0.3);
+            border: 3px solid rgba(255,102,0,0.6);
             animation: slideIn 0.5s ease;
             z-index: 10001;
+            max-width: 380px;
+            width: 90%;
+            white-space: pre-line;
+            font-family: 'Orbitron', monospace;
         }
         
         @media (max-width: 768px) {
             .success-message {
-                padding: 30px 40px;
-                font-size: 1.8em;
+                padding: 25px 15px;
+                font-size: 1em;
+                max-width: 340px;
             }
         }
         
@@ -670,12 +677,36 @@
     <div class="btf-particles"></div>
     <div class="btf-warp"></div>
 
+    <!-- Frame con descripción y video (visible al inicio) -->
+    <div id="videoIntroContainer" style="max-width: 420px; width: 98%; position: relative; z-index: 10; margin-bottom: 80px;">
+        <!-- Descripción con estilo BTTF -->
+        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 30px 20px; margin-bottom: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h2 style="text-align: center; color: #ffd700; font-size: 1.8em; margin-bottom: 15px; text-shadow: 0 0 10px rgba(255,215,0,0.8), 2px 2px 8px rgba(0,0,0,0.8); font-family: 'Orbitron', monospace;">
+                Bienvenido a Hill Badaloney, 1955
+            </h2>
+            <p style="text-align: center; color: #fff; font-size: 1em; line-height: 1.6; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
+                Marty, dale play al video y escucha atentamente. Tu futuro depende de ello...
+            </p>
+        </div>
+        
+        <!-- Video embebido -->
+        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <div style="position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #000; border: 3px solid rgba(255,102,0,0.65); box-shadow: 0 0 22px rgba(255,102,0,0.55);">
+                <video id="introVideo" src="video2.mp4" controls playsinline preload="auto" autoplay style="width: 100%; height: 100%; display: block; background: #000;" tabindex="0">
+                    Tu navegador no soporta el elemento video.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor del juego Mr. Sandman (oculto inicialmente) -->
+    <div id="gameContainer" style="display: none;">
     <div class="container">
         <h1>🎵 Mr. Sandman</h1>
-        <p class="subtitle">Las 13 primeras notas - The Chordettes</p>
+        <p class="subtitle">Marty, ¿Serás capaz de reproducir las 13 notas de Mr.Sandman?</p>
         
         <div class="controls">
-            <button class="control-btn" onclick="playSequence()">▶ Reproducir secuencia</button>
+            <button class="control-btn" onclick="playSequence()">▶ Escuchar la canción</button>
             <button class="control-btn" onclick="stopSequence()">⏹ Detener</button>
             <button class="control-btn" onclick="resetSequence()">🔄 Reset</button>
         </div>
@@ -685,7 +716,7 @@
         <div class="notes-grid" id="notesGrid"></div>
         
         <div class="info">
-            Haz clic en los botones en el orden correcto para completar la secuencia de 13 notas.
+            recuerda RESET para empezar la cancion
         </div>
     </div>
 
@@ -719,6 +750,12 @@
         const correctSequence = [1, 3, 5, 7, 6, 5, 3, 1, 2, 4, 6, 8, 7];
         let currentProgress = 0;
         let isPlaying = false;
+        
+        // Decrypt Adventure Lab password
+        function decryptLabWord() {
+            const encrypted = 'c2FuZG1hbjE5NTU=';
+            return atob(encrypted);
+        }
         
         function playNote(frequency, duration = 0.5) {
             const now = audioContext.currentTime;
@@ -765,7 +802,7 @@
                 document.querySelectorAll('.note-btn').forEach(btn => {
                     btn.classList.remove('correct', 'error');
                 });
-                clickedBtn.classList.add('error');
+                clickedBtn.classList.add('correct');//('error');
                 setTimeout(() => clickedBtn.classList.remove('error'), 500);
                 resetSequence();
             }
@@ -773,7 +810,7 @@
         
         function updateProgress() {
             const progressDiv = document.getElementById('progress');
-            progressDiv.textContent = `Progreso: ${currentProgress}/${correctSequence.length}`;
+            progressDiv.textContent = ``;//`Progreso: ${currentProgress}/${correctSequence.length}`;
         }
         
         function resetSequence() {
@@ -784,7 +821,7 @@
         function showSuccess() {
             const message = document.createElement('div');
             message.className = 'success-message';
-            message.textContent = '¡Conseguido!!';
+            message.textContent = '¡Conseguido!! \n palabra para el lab: ' + decryptLabWord() + ' ';
             document.body.appendChild(message);
             
             // Reproducir el mp3
@@ -828,6 +865,7 @@
         
         updateProgress();
     </script>
+    </div> <!-- Cierre de gameContainer -->
     </div> <!-- Cierre de mainContent -->
 
     <!-- Modal para video local -->
@@ -839,80 +877,35 @@
     </div>
 
     <script>
+        // Validar contraseña al cargar la página
+        (function checkPassword() {
+            const correctPassword = 'MTQwS01I'; // 140KMH en base64
+            const userPassword = prompt('Introduce la palabra que te dió la fase 1 (minúscula):');
+            
+            if (!userPassword || btoa(userPassword.toUpperCase()) !== correctPassword) {
+                alert('¡Contraseña incorrecta!');
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            // Si la contraseña es correcta, mostrar contenido
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('mainContent').classList.add('show');
+            
+            // Cuando el video termine, mostrar el juego
+            const introVideo = document.getElementById('introVideo');
+            introVideo.addEventListener('ended', function() {
+                document.getElementById('videoIntroContainer').style.display = 'none';
+                document.getElementById('gameContainer').style.display = 'block';
+            });
+        })();
+
+        /* Comentado: botón de inicio ya no necesario
         // Manejar el botón de inicio: abrir modal con video local y reproducir
         document.getElementById('startBtn').addEventListener('click', function() {
-            // Ocultar el botón
-            this.style.display = 'none';
-
-            const modal = document.getElementById('videoModal');
-            const video = document.getElementById('localVideo');
-
-            // Mostrar modal y reproducir
-            modal.classList.add('show');
-            modal.setAttribute('aria-hidden', 'false');
-            try {
-                video.currentTime = 0;
-                video.play().catch(err => console.log('Reproducción bloqueada o no permitida:', err));
-            } catch (err) {
-                console.log('Error al reproducir el video:', err);
-            }
-
-            // El temporizador NO inicia aquí. Se lanzará al cerrar el modal o
-            // cuando el video termine.
-
-            let finishRequested = false;
-            const countdownEl = document.getElementById('countdown');
-
-            const startFinishCountdown = () => {
-                if (finishRequested) return;
-                finishRequested = true;
-
-                countdownEl.classList.add('show');
-                let timeLeft = 5; // 5 segundos antes de mostrar contenido
-                countdownEl.textContent = timeLeft;
-
-                const interval = setInterval(() => {
-                    timeLeft--;
-                    countdownEl.textContent = timeLeft;
-                    if (timeLeft <= 0) {
-                        clearInterval(interval);
-                        countdownEl.classList.remove('show');
-                        // Mostrar el contenido principal después del contador
-                        document.getElementById('mainContent').classList.add('show');
-                    }
-                }, 1000);
-            };
-
-            // Cerrar modal: pausar video y arrancar el temporizador de 5s
-            const closeBtn = document.getElementById('videoClose');
-            const closeModal = () => {
-                try { video.pause(); } catch (e) {}
-                modal.classList.remove('show');
-                modal.setAttribute('aria-hidden', 'true');
-                startFinishCountdown();
-            };
-
-            if (closeBtn) closeBtn.onclick = closeModal;
-
-            modal.addEventListener('click', function(ev) {
-                if (ev.target === modal) closeModal();
-            });
-
-            document.addEventListener('keydown', function escHandler(ev) {
-                if (ev.key === 'Escape') {
-                    closeModal();
-                    document.removeEventListener('keydown', escHandler);
-                }
-            });
-
-            // Si el video termina, ocultamos modal y lanzamos la cuenta atrás
-            video.addEventListener('ended', function() {
-                try { video.pause(); } catch (e) {}
-                modal.classList.remove('show');
-                modal.setAttribute('aria-hidden', 'true');
-                startFinishCountdown();
-            });
+            // ... código del botón comentado
         });
+        */
 
         // Manejar los links de fases
         // Destinos codificados (base64). Si el destino final es absoluto (http/https)
@@ -921,7 +914,6 @@
         const _0x3f9d = [
             'aW5kZXguaHRtbA==',
             'c2FuZG1hbi9mZmFzZTIuaHRtbA==',
-            // base64 de https://jaumet-007.github.io/BTTF/14d/doc/faaase3.html
             'aHR0cHM6Ly9qYXVtZXQtMDA3LmdpdGh1Yi5pby9CVFRGLzE0ZC9kb2MvZmFhYXNlMy5odG1s',
             'bG92ZS9mYXNzc3NlNC5odG1s',
             'ZmFzZWVlZWU1Lmh0bWw='
@@ -945,7 +937,7 @@
                     return;
                 }
                 
-                const userPassword = prompt('Introduce la contraseña:');
+                const userPassword = prompt('Introduce la palabra que te dió la fase 1 (minúscula):');
                 
                 if (userPassword && btoa(userPassword.toUpperCase()) === encodedKey) {
                     const dest = atob(_0x3f9d[phase - 1]);
