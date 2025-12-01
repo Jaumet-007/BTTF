@@ -920,23 +920,8 @@
         document.querySelectorAll('.phase-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                
                 const phase = this.dataset.phase;
-                const encodedKey = this.dataset.key;
-                
-                // Fase 1 sin contraseña
-                if (phase === '1') {
-                    window.location.href = atob(_0x3f9d[phase - 1]);
-                    return;
-                }
-                
-                const userPassword = prompt('Introduce la palabra que te dió la fase 1 (minúscula):');
-                
-                if (userPassword && btoa(userPassword.toUpperCase()) === encodedKey) {
-                    window.location.href = atob(_0x3f9d[phase - 1]);
-                } else if (userPassword) {
-                    alert('¡Contraseña incorrecta!');
-                }
+                window.location.href = atob(_0x3f9d[phase - 1]);
             });
         });
     </script>
