@@ -173,6 +173,18 @@
 
   <!-- Example small snippet showing how pages using the template can hook into the start button -->
   <script>
+    // Validar contraseña al cargar la página
+    (function checkPassword() {
+      const correctPassword = 'TE9WRTE5NTU='; // LOVE1955 en base64
+      const userPassword = prompt('Introduce la palabra que te dió la fase anterior (minúscula):');
+      
+      if (!userPassword || btoa(userPassword.toUpperCase()) !== correctPassword) {
+        alert('¡Contraseña incorrecta!');
+        window.location.href = 'index.html';
+        return;
+      }
+    })();
+
     // This page doesn't use the start button; pageContent is visible by default.
     
     // Decrypt Adventure Lab password

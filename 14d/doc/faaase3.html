@@ -137,6 +137,18 @@
 
   <!-- Example small snippet showing how pages using the template can hook into the start button -->
   <script>
+    // Validar contraseña al cargar la página
+    (function checkPassword() {
+      const correctPassword = 'U0FORE1BTjE5NTU='; // SANDMAN1955 en base64
+      const userPassword = prompt('Introduce la palabra que te dió la fase anterior (minúscula):');
+      
+      if (!userPassword || btoa(userPassword.toUpperCase()) !== correctPassword) {
+        alert('¡Contraseña incorrecta!');
+        window.location.href = '../index.html';
+        return;
+      }
+    })();
+
     // This page doesn't use the start button; pageContent is visible by default.
 
     // Handle "not playing in the street" button
