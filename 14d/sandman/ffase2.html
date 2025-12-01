@@ -685,7 +685,7 @@
                 Bienvenido a Hill Badaloney, 1955
             </h2>
             <p style="text-align: center; color: #fff; font-size: 1em; line-height: 1.6; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
-                Marty, dale play al video y escucha atentamente. Tu futuro depende de ello...
+                Marty, escucha atentamente el video. Tu FUTURO depende de ello...
             </p>
         </div>
         
@@ -746,8 +746,13 @@
             { name: 'Fa+', key: 'fa+', number: 8 }
         ];
         
-        // Secuencia correcta: 1,3,5,7,6,5,3,1,2,4,6,8,7
-        const correctSequence = [1, 3, 5, 7, 6, 5, 3, 1, 2, 4, 6, 8, 7];
+        // Decrypt correct sequence
+        function decryptSequence() {
+            const encrypted = 'WzEsMyw1LDcsNiw1LDMsMSwyLDQsNiw4LDdd';
+            return JSON.parse(atob(encrypted));
+        }
+        
+        const correctSequence = decryptSequence();
         let currentProgress = 0;
         let isPlaying = false;
         
