@@ -6,9 +6,7 @@
   <title>BACK TO THE FUTURE - Fase 3</title>
   <style>
     /* ------------------------------
-       Esta plantilla contiene la parte COMÚN
-       usada por index.html y sandman/ffase2.html
-       Coloca tu contenido específico en el <main id="pageContent"> ... </main>
+       Template styling
        ------------------------------ */
 
     html, body { margin: 0; height: 100%; }
@@ -139,7 +137,7 @@
   <script>
     // Validar contraseña al cargar la página
     (function checkPassword() {
-      const correctPassword = 'U0FORE1BTjE5NTU='; // SANDMAN1955 en base64
+      const correctPassword = 'U0FORE1BTjE5NTU=';
       const userPassword = prompt('Introduce la palabra que te dió la fase anterior (minúscula):');
       
       if (!userPassword || btoa(userPassword.toUpperCase()) !== correctPassword) {

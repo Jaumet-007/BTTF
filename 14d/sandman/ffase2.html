@@ -884,7 +884,7 @@
     <script>
         // Validar contraseña al cargar la página
         (function checkPassword() {
-            const correctPassword = 'MTQwS01I'; // 140KMH en base64
+            const correctPassword = 'MTQwS01I';
             const userPassword = prompt('Introduce la palabra que te dió la fase 1 (minúscula):');
             
             if (!userPassword || btoa(userPassword.toUpperCase()) !== correctPassword) {
