@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Doc's house - Back to the Future</title>
+  <style>
+    /* ------------------------------
+       BTTF Template Base Styles
+       ------------------------------ */
+
+    html, body { margin: 0; height: 100%; }
+
+    body {
+      background-image: url('../iPhone-wallpaper-back-to-the-future.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: bottom center;
+      background-attachment: fixed;
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    /* Shared UI pieces */
+
+    #phaseLinks{
+      position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+      z-index: 10000; display:flex; gap:15px; padding:10px 20px;
+      background: rgba(11,18,33,0.8); border-radius:20px; border:2px solid rgba(255,102,0,0.5);
+    }
+
+    .phase-link{ font-family:'Orbitron', monospace; font-weight:700; color:#ffd700; padding:8px 15px; background: rgba(255,215,0,0.08); border-radius:8px; text-decoration:none; }
+
+    /* Visual effects shared between pages */
+    .btf-glow{ position:fixed; inset:0; pointer-events:none; background: radial-gradient(circle at center, rgba(255,120,0,0.55) 0%, rgba(255,0,80,0.5) 30%, rgba(0,200,255,0.45) 60%, rgba(0,0,0,0) 80%); mix-blend-mode:screen; animation: glowPulse 4s ease-in-out infinite; filter: blur(2px); }
+    @keyframes glowPulse{ 0%,100%{opacity:.75} 50%{opacity:1} }
+
+    .btf-grid{ position:fixed; bottom:0; left:0; width:100%; height:45vh; pointer-events:none; background-image: linear-gradient(0deg, rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px); background-size:55px 55px; transform:perspective(900px) rotateX(65deg); opacity:0.45; mix-blend-mode:screen; }
+
+    /* Page content container */
+    main#pageContent{ 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position:relative; 
+      z-index:10; 
+      width:100%; 
+      max-width:1100px; 
+      margin: 20px auto; 
+      padding: 20px; 
+      box-sizing:border-box;
+      text-align: center;
+    }
+
+    /* ------------------------------
+       Puzzle-Specific Styles
+       ------------------------------ */
+    :root {
+        --grid-cols: 3;
+        --grid-rows: 4;
+        --piece-size: 90px; /* Tamaño por defecto para móvil */
+        --image-url: url('picture.jpg');
+    }
+
+    h1, p {
+        margin: 10px 0;
+        color: #ffd700;
+        font-family: 'Orbitron', monospace;
+        text-shadow: 0 0 10px rgba(255,215,0,0.8);
+    }
+
+    h1 {
+        font-size: 28px;
+        font-weight: 900;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    /* Contenedor del puzle */
+    .puzzle-grid {
+        display: grid;
+        grid-template-columns: repeat(var(--grid-cols), var(--piece-size));
+        grid-template-rows: repeat(var(--grid-rows), var(--piece-size));
+        border: 3px solid #ff6600;
+        box-shadow: 0 0 20px rgba(255,102,0,0.6), 0 0 40px rgba(255,215,0,0.4);
+        margin: 20px 0;
+        touch-action: manipulation;
+        background: 
+            linear-gradient(0deg, rgba(255,215,0,0.4) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,215,0,0.4) 1px, transparent 1px),
+            rgba(0,0,0,0.5);
+        background-size: 4px 4px;
+    }
+
+    /* Estilo para cada pieza */
+    .puzzle-piece {
+        width: var(--piece-size);
+        height: var(--piece-size);
+        background-image: var(--image-url);
+        background-size: calc(var(--piece-size) * var(--grid-cols)) calc(var(--piece-size) * var(--grid-rows));
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        border: 1px solid #ff6600;
+        box-sizing: border-box;
+    }
+
+    .puzzle-piece:hover {
+        transform: scale(1.05);
+    }
+
+    /* Estilo para la pieza vacía */
+    .empty-piece {
+        background-image: none !important;
+        background-color: rgba(30, 30, 30, 0.8);
+        border: 1px solid #ffd700;
+        cursor: default;
+    }
+
+    .empty-piece:hover {
+        transform: none;
+    }
+
+    button {
+        padding: 12px 30px;
+        margin: 10px;
+        cursor: pointer;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+        color: #000;
+        border: 2px solid #ff6600;
+        border-radius: 8px;
+        font-size: 18px;
+        font-family: 'Orbitron', monospace;
+        font-weight: 700;
+        text-transform: uppercase;
+        box-shadow: 0 0 15px rgba(255,102,0,0.6);
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        box-shadow: 0 0 25px rgba(255,102,0,0.9);
+        transform: scale(1.05);
+    }
+
+    #mensaje-victoria {
+        font-size: 24px;
+        font-weight: 900;
+        color: #ff0000;
+        text-shadow: 0 0 20px rgba(255,0,0,0.8);
+        margin-top: 15px;
+        min-height: 30px;
+    }
+
+    /* Ajuste de tamaño para tabletas y escritorios */
+    @media (min-width: 600px) {
+        :root {
+            --piece-size: 110px;
+        }
+        h1 { font-size: 36px; }
+        p { font-size: 18px; }
+    }
+
+    /* Responsive para móvil */
+    @media (max-width:768px){ 
+        h1 { font-size: 24px; }
+        p { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- shared visual layers and controls -->
+  <div id="phaseLinks">
+    <a href="#" class="phase-link" data-phase="1" data-key="ZmFzZTE=">Fase_1</a>
+    <a href="#" class="phase-link" data-phase="2" data-key="cXVhbg==">Fase_2</a>
+    <a href="#" class="phase-link" data-phase="3" data-key="bGE=">Fase_3</a>
+    <a href="#" class="phase-link" data-phase="4" data-key="bXVudGFueWE=">Fase_4</a>
+    <a href="#" class="phase-link" data-phase="5" data-key="Y2F1">Fase_5</a>
+  </div>
+
+  <div class="btf-glow"></div>
+  <div class="btf-grid"></div>
+
+  <!-- Puzzle Content -->
+  <main id="pageContent">
+    <h1 id="titulo">Troba la casa</h1>
+    <p id="instrucciones">Mou els quadres i reconstrueix-la</p>
+    
+    <div id="puzzle-container" class="puzzle-grid"></div>
+    
+    <button id="botonReiniciar" onclick="iniciarJuego()">Reiniciar Puzle</button>
+    
+    <p id="mensaje-victoria"></p>
+  </main>
+
+  <script>
+    // --- PHASE LINKS FUNCTIONALITY ---
+    document.querySelectorAll('.phase-link').forEach(link => {
+      link.addEventListener('click', function(e){
+        e.preventDefault();
+        const phase = this.dataset.phase;
+        const encodedKey = this.dataset.key;
+        const userPassword = prompt('Introdueix la contrasenya:');
+        if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
+          window.location.href = atob(['Li4vaW5kZXguaHRtbA==','Li4vc2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','Li4vbG92ZS9mYXNzc3NlNC5odG1s','Li4vZmFzZWVlZWU1Lmh0bWw='][phase-1]);
+        } else if (userPassword) {
+          alert('Contrasenya incorrecta!');
+        }
+      });
+    });
+
+    // --- PUZZLE JAVASCRIPT FUNCTIONALITY ---
+    const GRID_COLS = 3;
+    const GRID_ROWS = 4;
+    const NUM_PIECES = GRID_COLS * GRID_ROWS;
+    const container = document.getElementById('puzzle-container');
+    let pieces = [];
+    let emptyIndex = NUM_PIECES - 1;
+
+    // --- Funciones de Utilidad ---
+    const getOriginalIndex = (pieceId) => parseInt(pieceId.replace('piece-', ''));
+
+    const getCurrentPosition = (index) => ({
+        row: Math.floor(index / GRID_COLS),
+        col: index % GRID_COLS
+    });
+
+    const isMoveValid = (index) => {
+        const { row: r1, col: c1 } = getCurrentPosition(index);
+        const { row: r2, col: c2 } = getCurrentPosition(emptyIndex);
+        
+        return (Math.abs(r1 - r2) === 1 && c1 === c2) || (Math.abs(c1 - c2) === 1 && r1 === r2);
+    };
+
+    // --- Funciones del Puzle ---
+    const generarPieza = (originalIndex) => {
+        const piece = document.createElement('div');
+        piece.classList.add('puzzle-piece');
+        piece.id = `piece-${originalIndex}`;
+        
+        const row = Math.floor(originalIndex / GRID_COLS);
+        const col = originalIndex % GRID_COLS;
+        
+        piece.style.backgroundPosition = `-${col * 100}% -${row * 100}%`;
+        
+        if (originalIndex === NUM_PIECES - 1) {
+            piece.classList.add('empty-piece');
+            piece.onclick = null;
+        }
+        
+        return piece;
+    };
+
+    const dibujarPuzle = () => {
+        container.innerHTML = '';
+        
+        pieces.forEach((pieceId, index) => {
+            const originalIndex = getOriginalIndex(pieceId);
+            const pieceElement = generarPieza(originalIndex);
+
+            if (originalIndex !== NUM_PIECES - 1) {
+                pieceElement.onclick = () => moverPieza(index);
+            }
+            container.appendChild(pieceElement);
+        });
+        
+        emptyIndex = pieces.findIndex(id => id === `piece-${NUM_PIECES - 1}`);
+    };
+
+    const moverPieza = (clickedPieceCurrentIndex) => {
+        if (!isMoveValid(clickedPieceCurrentIndex)) {
+            return;
+        }
+
+        [pieces[clickedPieceCurrentIndex], pieces[emptyIndex]] = [pieces[emptyIndex], pieces[clickedPieceCurrentIndex]];
+
+        emptyIndex = clickedPieceCurrentIndex;
+
+        dibujarPuzle();
+        comprobarVictoria();
+    };
+
+    const barajarPiezas = () => {
+        pieces = Array.from({ length: NUM_PIECES }, (_, i) => `piece-${i}`);
+        
+        for (let i = pieces.length - 2; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+        }
+        
+        const emptyPieceIndexInArray = pieces.findIndex(id => id === `piece-${NUM_PIECES - 1}`);
+        [pieces[emptyPieceIndexInArray], pieces[NUM_PIECES - 1]] = [pieces[NUM_PIECES - 1], pieces[emptyPieceIndexInArray]];
+        
+        if (pieces.every((id, i) => getOriginalIndex(id) === i)) {
+            barajarPiezas();
+            return;
+        }
+    };
+
+    const comprobarVictoria = () => {
+        const isSolved = pieces.every((id, i) => getOriginalIndex(id) === i);
+        const messageElement = document.getElementById('mensaje-victoria');
+        
+        if (isSolved) {
+            // Reemplazar título con pregunta
+            const titulo = document.getElementById('titulo');
+            titulo.textContent = 'Nom de la Doc´s House?';
+            titulo.style.color = '#ff0000';
+            titulo.style.textShadow = '0 0 20px rgba(255,0,0,0.8)';
+            
+            // Ocultar instrucciones y botón
+            document.getElementById('instrucciones').style.display = 'none';
+            document.getElementById('botonReiniciar').style.display = 'none';
+            
+            // Reproducir sonido de victoria
+            const victorySound = new Audio('victory.mp3');
+            victorySound.play();
+            
+            const emptyTile = container.querySelector('.empty-piece');
+            if (emptyTile) {
+                emptyTile.classList.remove('empty-piece');
+                emptyTile.style.backgroundColor = 'transparent';
+            }
+            container.querySelectorAll('.puzzle-piece').forEach(p => p.onclick = null);
+
+        } else {
+            messageElement.textContent = '';
+        }
+    };
+
+    const iniciarJuego = () => {
+        // Restaurar título original
+        const titulo = document.getElementById('titulo');
+        titulo.textContent = 'Troba la casa';
+        titulo.style.color = '#ffd700';
+        titulo.style.textShadow = '0 0 10px rgba(255,215,0,0.8)';
+        
+        // Mostrar instrucciones y botón
+        document.getElementById('instrucciones').style.display = 'block';
+        document.getElementById('botonReiniciar').style.display = 'inline-block';
+        
+        document.getElementById('mensaje-victoria').textContent = '';
+        barajarPiezas();
+        dibujarPuzle();
+    };
+
+    // Iniciar el juego automáticamente al cargar la página
+    window.onload = iniciarJuego;
+    </script>
+</body>
+</html>
