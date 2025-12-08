@@ -686,16 +686,30 @@
                 Benvingut a Hill Badaloney, 1955
             </h2>
             <p style="text-align: center; color: #fff; font-size: 1em; line-height: 1.6; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
-                Marty, escolta atentament el video. El teu FUTURO depén d'això...
+                Marty, escolta atentament el video. El teu FUTUR depén d'això...
             </p>
         </div>
         
         <!-- Video embebido -->
         <div style="background: rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
             <div style="position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #000; border: 3px solid rgba(255,102,0,0.65); box-shadow: 0 0 22px rgba(255,102,0,0.55);">
-                <video id="introVideo" src="video2.mp4" controls playsinline preload="auto" autoplay style="width: 100%; height: 100%; display: block; background: #000;" tabindex="0">
+                <video id="introVideo" src="video2.mp4" controls playsinline preload="auto" style="width: 100%; height: 100%; display: block; background: #000;" tabindex="0">
                     Tu navegador no soporta el elemento video.
                 </video>
+            </div>
+        </div>
+        
+        <!-- Texto de instrucciones y botón -->
+        <div id="quietZoneInfo" style="background: rgba(11, 18, 33, 0.8); border-radius: 15px; padding: 20px; margin-top: 20px; border: 2px solid rgba(255, 102, 0, 0.5); box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);">
+            <p style="font-family: 'Orbitron', monospace; font-size: 16px; font-weight: 700; color: #ffd700; text-shadow: 0 0 15px rgba(255,215,0,0.9), 0 0 30px rgba(255,102,0,0.7); margin: 0 0 15px 0; line-height: 1.6; text-align: center;">
+                Cerca un lloc silenciós.<br>
+                Potser des del McDonalds direcció Barcelona a la zona d'ascensors.<br>
+                o en la taquilla del Parking
+            </p>
+            <div style="text-align: center;">
+                <button id="startVideoBtn" style="padding: 15px 35px; font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 800; text-transform: uppercase; color: #000; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%); border: 3px solid #ff6600; border-radius: 8px; cursor: pointer; box-shadow: 0 0 20px rgba(255,102,0,0.8), 0 0 40px rgba(255,215,0,0.6); transition: all 0.3s ease;">
+                    Estic a zona tranquil·la
+                </button>
             </div>
         </div>
     </div>
@@ -898,8 +912,16 @@
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('mainContent').classList.add('show');
             
-            // Cuando el video termine, mostrar el juego
+            // Manejar el botón para iniciar el video
+            const startVideoBtn = document.getElementById('startVideoBtn');
             const introVideo = document.getElementById('introVideo');
+            const quietZoneInfo = document.getElementById('quietZoneInfo');
+            
+            startVideoBtn.addEventListener('click', function() {
+                introVideo.play().catch(err => console.log('Error al reproducir video:', err));
+            });
+            
+            // Cuando el video termine, ocultar el contenedor completo (video + texto + botón) y mostrar el juego
             introVideo.addEventListener('ended', function() {
                 document.getElementById('videoIntroContainer').style.display = 'none';
                 document.getElementById('gameContainer').style.display = 'block';
