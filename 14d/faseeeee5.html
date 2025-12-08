@@ -196,10 +196,10 @@
       link.addEventListener('click', function(e){
         e.preventDefault();
         const phase = this.dataset.phase;
+        // Redirigir directamente sin pedir contraseña (ya validado al cargar la página)
         window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZG9jL2ZhYWFzZTMuaHRtbA==','bG92ZS9mYXNzc3NlNC5odG1s','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
       });
-
-      });
+    });
 
       // end forEach (phase-link loop)
 
