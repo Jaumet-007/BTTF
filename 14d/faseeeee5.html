@@ -6,9 +6,7 @@
   <title>BACK TO THE FUTURE - Fase 5</title>
   <style>
     /* ------------------------------
-       Esta plantilla contiene la parte COMÚN
-       usada por index.html y sandman/ffase2.html
-       Coloca tu contenido específico en el <main id="pageContent"> ... </main>
+       Template styling
        ------------------------------ */
 
     html, body { margin: 0; height: 100%; }
@@ -42,6 +40,17 @@
     }
 
     #countdown.show { display:block; }
+    
+    /* Animaciones para el texto de victoria */
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.1); }
+    }
+    
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 10px rgba(255,215,0,1), 0 0 20px rgba(255,102,0,1), 0 0 30px rgba(255,0,0,0.8); }
+      50% { text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,102,0,1), 0 0 60px rgba(255,0,0,1), 0 0 80px rgba(255,215,0,0.8); }
+    }
 
     #phaseLinks{
       position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
@@ -91,11 +100,11 @@
   <div id="countdown"></div>
 
   <div id="phaseLinks">
-    <a href="#" class="phase-link" data-phase="1" data-key="ZmFzZTE=">Fase_1</a>
-    <a href="#" class="phase-link" data-phase="2" data-key="cXVhbg==">Fase_2</a>
-    <a href="#" class="phase-link" data-phase="3" data-key="bGE=">Fase_3</a>
-    <a href="#" class="phase-link" data-phase="4" data-key="bXVudGFueWE=">Fase_4</a>
-    <a href="#" class="phase-link" data-phase="5" data-key="Y2F1">Fase_5</a>
+    <a href="#" class="phase-link" data-phase="1" data-key="">Fase_1</a>
+    <a href="#" class="phase-link" data-phase="2" data-key="MTQwS01I">Fase_2</a>
+    <a href="#" class="phase-link" data-phase="3" data-key="U0FORE1BTjE5NTU=">Fase_3</a>
+    <a href="#" class="phase-link" data-phase="4" data-key="RkVSTUFY">Fase_4</a>
+    <a href="#" class="phase-link" data-phase="5" data-key="TE9WRTE5NTU=">Fase_5</a>
   </div>
 
   <div class="btf-glow"></div>
@@ -107,19 +116,19 @@
     <div style="text-align:center; padding:12px 10px;">
       <!-- instrucciones adaptadas al ancho del fondo -->
       <div class="instructions" role="region" aria-label="instruccions doc">
-        <p>Ets al punt de no-retorn.</p>
+        <p>Estàs al punt de no retorn...</p>
 
-        <p>Has d'accelerar a 180km/h i tornar al futur.</p>
+        <p>Has d'accelerar a 140km/h i tornar al futur.</p>
 
-        <p>Abans de moure't, Prem el botó <strong>"ACTIVAR GPS"</strong>. quan aparegui:</p>
+        <p>Abans de moure't, busca un lloc recte on puguis córrer.<br>
+        Necessitaràs almenys 80 metres d'espai davant teu. <br>
+        Prem el botó <strong>"ACTIVAR GPS"</strong> i apareixerà quelcom semblant a això:</p>
         <p style="text-align:center; margin:8px 0;">
           <img src="gps.jpg" alt="gps" style="max-width:360px; width:70%; height:auto; display:block; margin:0 auto; border-radius:8px; box-shadow:0 6px 22px rgba(0,0,0,0.6);" />
         </p>
-        <p>prem <strong>PERMETRE</strong> i comença a córrer per, en menys de 10 segons estar a 30 metres del punt inicial.</p>
+        <p>Quan premis <strong>PERMETRE</strong>, CORRE MOLTTT! corre per estar, en menys de 10 segons, a 50 metres del punt inicial.</p>
 
-        <p>Si ho fas, el Delorean arribarà als 180 km/h i tornaràs a la teva època.</p>
-
-        <p>Quan estiguis a punt de córrer, prem <strong>ACTIVAR GPS</strong> i CORRE! només son 10 segons.</p>
+        <p>Si ho fas, el Delorean arribarà als 140 km/h i tornaràs a la teva època.</p>
       </div>
 
       <div class="video-frame" aria-label="video frame" style="display:block;">
@@ -131,30 +140,63 @@
         <div id="gpsControls" class="answer-buttons" aria-hidden="false" style="display:flex; flex-direction:column; gap:8px; margin-top:14px; align-items:center; position:relative;">
           <button id="startGpsBtn" class="answer-btn" aria-label="ACTIVAR GPS">ACTIVAR GPS</button>
           <div id="gpsStatus" style="font-weight:800; color:#ffd700; display:none;">Coordenada inicial: <span id="coordsText"></span></div>
-          <div id="distanceResult" style="font-weight:900; color:#ffcccb; display:none;">Distancia: <span id="distanceText"></span> m</div>
+          <div id="distanceResult" style="font-weight:900; color:#ffcccb; display:none;">Distància: <span id="distanceText"></span> m</div>
           <!-- overlay removed per request: clicking ACTIVAR GPS will directly request location permission -->
         </div>
       </div>
+
+      <!-- Texto de victoria con efectos espectaculares (fuera del videoFinalFrame) -->
+      <div id="victoryText" style="display:none; position:fixed; top:80px; left:50%; transform:translateX(-50%); width:90%; max-width:440px; text-align:center; z-index:16000; font-family:'Orbitron',monospace; font-size:26px; font-weight:900; text-transform:uppercase; color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,1), 0 0 20px rgba(255,102,0,1), 0 0 30px rgba(255,0,0,0.8); animation:pulse 1.5s ease-in-out infinite, glow 2s ease-in-out infinite; background:rgba(0,0,0,0.7); padding:20px; border-radius:15px; border:3px solid rgba(255,102,0,0.8);">
+        ACONSEGUIT!<br>
+        <span style="font-size:18px; display:block; margin-top:8px; color:#fff; text-shadow:0 0 8px rgba(255,215,0,0.9), 0 0 15px rgba(255,102,0,0.7);">Observa el final de LA TEVA història</span>
+      </div>
+
+      <!-- Video final embebido (oculto inicialmente) -->
+      <div id="videoFinalFrame" style="display:none; position:fixed; top:260px; left:50%; transform:translateX(-50%); width:92%; max-width:420px; z-index:15000;">
+        <div style="position:relative; width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#000; border:3px solid rgba(255,102,0,0.65); box-shadow:0 0 22px rgba(255,102,0,0.55);">
+          <video id="finalVideo" src="final.mp4" controls playsinline preload="metadata" style="width:100%; height:100%; display:block; background:#000;" tabindex="0">
+            Tu navegador no soporta el elemento video.
+          </video>
+        </div>
+        <!-- Palabra Adventure Lab -->
+        <div id="adventureLabPassword" style="margin-top:15px; text-align:center; font-family:'Orbitron',monospace; font-size:16px; font-weight:700; color:#ffd700; text-shadow:0 0 8px rgba(255,215,0,0.8); background:rgba(11,18,33,0.6); padding:12px; border-radius:8px; border:2px solid rgba(255,102,0,0.5);">
+          Paraula Adventure Lab: <span id="labWord"></span>
+        </div>
+      </div>
+      
+      <!-- Canvas para confetti -->
+      <canvas id="confettiCanvas" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:14999;"></canvas>
     </div>
   </main>
 
   <!-- Example small snippet showing how pages using the template can hook into the start button -->
   <script>
+    // Validar contraseña al cargar la página
+    (function checkPassword() {
+      const correctPassword = 'TE9WRTE5NTU=';
+      const userPassword = prompt('Introdueix la paraula que et va donar la fase anterior (minúscula):');
+      
+      if (!userPassword || btoa(userPassword.toUpperCase()) !== correctPassword) {
+        alert('Contrasenya incorrecta!');
+        window.location.href = 'index.html';
+        return;
+      }
+    })();
+
     // This page doesn't use the start button; pageContent is visible by default.
+    
+    // Decrypt Adventure Lab password
+    function decryptLabWord() {
+      const encrypted = 'cmVncmVzbyBhbCBmdXR1cm8=';
+      return atob(encrypted);
+    }
 
     // Phase links keep the base64-password pattern from original files
     document.querySelectorAll('.phase-link').forEach(link => {
       link.addEventListener('click', function(e){
         e.preventDefault();
         const phase = this.dataset.phase;
-        const encodedKey = this.dataset.key;
-        const userPassword = prompt('Introdueix la contrasenya:');
-        if (userPassword && btoa(userPassword.toLowerCase()) === encodedKey) {
-          // By default, redirect to decoded path
-          window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZmFhYXNlMy5odG1s','bG92ZS9mYXNzc3NlNC5odG1s','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
-        } else if (userPassword) {
-          alert('Contrasenya incorrecta!');
-        }
+        window.location.href = atob(['aW5kZXguaHRtbA==','c2FuZG1hbi9mZmFzZTIuaHRtbA==','ZG9jL2ZhYWFzZTMuaHRtbA==','bG92ZS9mYXNzc3NlNC5odG1s','ZmFzZWVlZWU1Lmh0bWw='][phase-1]);
       });
 
       });
@@ -173,6 +215,7 @@
         let startCoords = null;
         let timer = null;
         let countdownInterval = null;
+        let themeAudio = null;
 
         function toRad(n){ return n * Math.PI / 180; }
         function haversine(lat1, lon1, lat2, lon2){
@@ -184,19 +227,23 @@
           return R * c;
         }
 
-        function clearTimers(){ if (timer) { clearTimeout(timer); timer = null; } if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; } }
+        function clearTimers(){ 
+          if (timer) { clearTimeout(timer); timer = null; } 
+          if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+        }
 
         if (!startBtn) return; // nothing to do
 
         startBtn.addEventListener('click', function(){
           // directly request geolocation permission and start the capture/countdown
           startBtn.disabled = true;
+          startBtn.style.display = 'none'; // Hide button
           distanceResult.style.display = 'none';
           gpsStatus.style.display = 'block';
-          gpsStatus.textContent = 'Obteniendo coordenada inicial...';
+          gpsStatus.textContent = 'Obtenint coordenada inicial...';
 
           if (!navigator.geolocation){
-            alert('Geolocalización no soportada por tu navegador.');
+            alert('Geolocalizació no suportada pel teu navegador.');
             startBtn.disabled = false;
             return;
           }
@@ -204,15 +251,20 @@
           navigator.geolocation.getCurrentPosition(function(pos){
             startCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
             coordsText.textContent = startCoords.lat.toFixed(6) + ', ' + startCoords.lon.toFixed(6);
-            gpsStatus.innerHTML = 'Coordenada inicial tomada: <strong>' + coordsText.textContent + '</strong>';
+            gpsStatus.innerHTML = 'Coordenada inicial capturada. CORREEE! <strong>' // + coordsText.textContent + '</strong>';
+
+            // Start playing theme.mp3
+            themeAudio = new Audio('speed.mp3');
+            themeAudio.loop = false;
+            themeAudio.play().catch(err => console.log('Error playing audio:', err));
 
             // start 10s countdown and open a watchPosition so we don't request permission twice
             let remaining = 10;
-            gpsStatus.innerHTML += `<div id="gpsCountdown" style="margin-top:6px; font-weight:700; color:#ffd700;">Cuenta atrás: ${remaining} s</div>`;
+            gpsStatus.innerHTML += `<div id="gpsCountdown" style="margin-top:12px; font-weight:900; font-size:120px; color:#ffd700; text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,102,0,1);">${remaining}</div>`;
             countdownInterval = setInterval(() => {
               remaining -= 1;
               const cd = document.getElementById('gpsCountdown');
-              if (cd) cd.textContent = 'Cuenta atrás: ' + remaining + ' s';
+              if (cd) cd.textContent = remaining;
             }, 1000);
 
             // Use watchPosition for continuous updates during the 10s window so browsers don't re-prompt.
@@ -224,19 +276,21 @@
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
 
             timer = setTimeout(() => {
-              // stop countdown
+              // stop countdown and audio
               clearTimers();
-              gpsStatus.innerHTML = 'Calculando distancia actual...';
+              gpsStatus.innerHTML = 'Calculant distància actual...';
 
               // compute distance using lastPosition (from the watch)
               const meters = haversine(startCoords.lat, startCoords.lon, lastPosition.lat, lastPosition.lon);
               distanceText.textContent = meters.toFixed(1);
               distanceResult.style.display = 'block';
               gpsStatus.style.display = 'block';
-              if (meters >= 30) {
-                alert('¡CORRECTO! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 30 m).');
+              if (meters >= 50) {
+                // alert('¡BIEEEN! Estás a ' + meters.toFixed(1) + ' m de la coordenada inicial (>= 50 m).');
+                // Show video modal
+                showFinalVideo(meters);
               } else {
-                alert('ERROR (no alcanzaste 30 m). Estás a ' + meters.toFixed(1) + ' m.');
+                alert('OH NO! No hi vas arribar! només vas recórrer: ' + meters.toFixed(1) + ' m.');
               }
               // clear the watch we started
               try { if (watchId != null) navigator.geolocation.clearWatch(watchId); } catch (e) {}
@@ -244,11 +298,95 @@
             }, 10000);
 
             }, function(err){
-              alert('No se pudo obtener la coordenada inicial: ' + (err.message || err.code));
+              alert('No s\'ha pogut obtenir la coordenada inicial: ' + (err.message || err.code));
               startBtn.disabled = false;
               clearTimers();
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
           });
+
+        function showFinalVideo(  distanceMeters) {
+          const videoFrame = document.getElementById('videoFinalFrame');
+          const video = document.getElementById('finalVideo');
+          const confettiCanvas = document.getElementById('confettiCanvas');
+          const victoryText = document.getElementById('victoryText');
+
+          // Hide instructions and GPS image
+          const instructions = document.querySelector('.instructions');
+          if (instructions) instructions.style.display = 'none';
+
+          // Show victory text, video frame and confetti
+          const speedKmH = ((distanceMeters / 10) * 3.6) + 130;
+          const speedHuman = ((distanceMeters / 10) * 3.6);
+          victoryText.innerHTML = `<div style="color:#ffd700;">¡SÍÍ! ACONSEGUIT!</div><div style="font-size:20px; margin-top:8px; color:#fff;">Amb els teus ${speedHuman.toFixed(1)}km/h El Delorian ha arribat als ${speedKmH.toFixed(1)} km/h.</div><div style="font-size:18px; margin-top:8px; color:#87CEEB; text-shadow:0 0 8px rgba(135,206,235,0.9), 0 0 15px rgba(135,206,235,0.7);">Gaudeix d'aquest vídeo final:</div>`;
+          victoryText.style.display = 'block';
+          videoFrame.style.display = 'block';
+          confettiCanvas.style.display = 'block';
+          
+          // Show Adventure Lab password
+          const labWordElement = document.getElementById('labWord');
+          if (labWordElement) {
+            labWordElement.textContent = decryptLabWord();
+          }
+          
+          // Start confetti animation
+          startConfetti(confettiCanvas);
+          
+          // Play video
+          video.currentTime = 0;
+          video.play().catch(err => console.log('Error al reproducir video:', err));
+        }
+        
+        function startConfetti(canvas) {
+          const ctx = canvas.getContext('2d');
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          
+          const particles = [];
+          const colors = ['#ffd700', '#ff6600', '#ff0000', '#00d4ff', '#fff', '#ffed4e'];
+          
+          // Create particles
+          for (let i = 0; i < 150; i++) {
+            particles.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * canvas.height - canvas.height,
+              w: Math.random() * 10 + 5,
+              h: Math.random() * 10 + 5,
+              vx: Math.random() * 4 - 2,
+              vy: Math.random() * 3 + 2,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              rotation: Math.random() * 360,
+              rotationSpeed: Math.random() * 10 - 5
+            });
+          }
+          
+          function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach((p, index) => {
+              ctx.save();
+              ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+              ctx.rotate((p.rotation * Math.PI) / 180);
+              ctx.fillStyle = p.color;
+              ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              ctx.restore();
+              
+              p.x += p.vx;
+              p.y += p.vy;
+              p.rotation += p.rotationSpeed;
+              
+              // Reset particle when it goes off screen
+              if (p.y > canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * canvas.width;
+              }
+            });
+            
+            requestAnimationFrame(animate);
+          }
+          
+          animate();
+        }
+
 
       })();
   </script>
