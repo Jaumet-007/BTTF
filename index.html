@@ -15,7 +15,7 @@ button,select{background:var(--ui);color:var(--fg);border:1px solid var(--dim);b
 .l{font-size:20px;color:var(--dim);line-height:1.3}.cur{font-size:30px;color:var(--fg);line-height:1.25;font-weight:bold}
 .who{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
 #tap{position:absolute;inset:0;display:flex}#tap div{flex:1}
-#heard{font-size:11px;color:#3a2f16;padding:6px 12px;min-height:16px;font-family:monospace}
+#heard{font-size:13px;color:#9b7d3c;padding:6px 12px;min-height:34px;font-family:monospace}
 </style></head><body>
 <div id="setup">
 <h1>Subtítulos en vivo</h1>
@@ -49,15 +49,15 @@ const kc={};function key(w){return kc[w]||(kc[w]=w.replace(/ph/g,'f').replace(/c
 function lev1(a,b){if(a.length<b.length)[a,b]=[b,a];let i=0;while(i<b.length&&a[i]===b[i])i++;if(a.length===b.length)return a.slice(i+1)===b.slice(i+1);return a.slice(i+1)===b.slice(i)}
 function eq(a,b){if(a===b)return true;if(a.length<4||b.length<4)return false;if(key(a)===key(b))return true;return a.length>=5&&Math.abs(a.length-b.length)<=1&&lev1(a,b)}
 function score(tail,w){if(!w.length||!tail.length)return 0;let hit=0,bi=0,prev=-2;tail.forEach(x=>{const j=w.findIndex(y=>eq(x,y));if(j>=0){hit++;if(j===prev+1)bi++;prev=j}else prev=-2});return (hit+bi)/Math.max(3,Math.min(w.length,tail.length)+(tail.length>3?1:0))}
-let pend=-1,lastOk=Date.now();
-function match(text){const words=norm(text);if(words.length<2)return;const tail=words.slice(-9);const lost=Date.now()-lastOk>8000;const lo=Math.max(0,cur-(lost?60:2)),hi=Math.min(L.length,cur+(lost?150:30));let best=-1,bs=0;
+let pend=-1,lastOk=Date.now(),diag='';
+function match(text){const words=norm(text);if(words.length<2)return;const tail=words.slice(-9);const lost=Date.now()-lastOk>6000;const lo=Math.max(0,cur-(lost?3000:2)),hi=Math.min(L.length,cur+(lost?3000:30));let best=-1,bs=0;
  for(let i=lo;i<hi;i++){let s=score(tail,L[i].w);if(i>=cur&&i<=cur+3)s*=1.15;if(s>bs){bs=s;best=i}}
- if(best<0||bs<.6)return;
+ diag=best>=0?' → #'+(best+1)+' ('+bs.toFixed(2)+')':'';if(best<0||bs<.6)return;
  const step=best-cur;if(step>=0&&step<=4){cur=best;pend=-1;lastOk=Date.now();show();return}
  if(pend>=0&&Math.abs(best-pend)<=2){cur=best;pend=-1;lastOk=Date.now();show()}else pend=best}
 function startRec(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){$('heard').textContent='Este navegador no soporta reconocimiento de voz: usa Chrome (Android) o Safari. Puedes avanzar tocando.';return}
  rec=new R();rec.lang=$('lang').value;rec.continuous=true;rec.interimResults=true;
- rec.onresult=e=>{let t='';for(let i=Math.max(0,e.results.length-3);i<e.results.length;i++)t+=' '+e.results[i][0].transcript;$('heard').textContent=t.trim().slice(-80);match(t)};
+ rec.onresult=e=>{const R=e.results;let t=R[R.length-1][0].transcript;if(norm(t).length<5&&R.length>1)t=R[R.length-2][0].transcript+' '+t;match(t);$('heard').textContent='Oí: '+t.trim().slice(-70)+diag};
  rec.onstart=()=>{$('mic').textContent='🎤 escuchando';$('heard').textContent='Escuchando… habla o pon audio cerca'};rec.onspeechstart=()=>{$('mic').textContent='🎤 oigo voz'};rec.onend=()=>{if(micOn)setTimeout(()=>{try{rec.start()}catch(e){}},300)};rec.onerror=e=>{const m={'not-allowed':'Micrófono BLOQUEADO. Abre esta página directamente en Chrome/Safari (no dentro de la app de Claude) y acepta el permiso.','service-not-allowed':'El navegador no permite reconocimiento de voz aquí. Abre la página en Chrome (Android) o Safari (iPhone).','no-speech':'No oigo nada: sube el volumen o acerca el móvil.','audio-capture':'No encuentro micrófono.','network':'Sin internet: el reconocimiento de voz lo necesita.'};if(e.error==='not-allowed'||e.error==='service-not-allowed')micOn=false;if(e.error!=='no-speech'&&e.error!=='aborted')$('mic').textContent='🎤 error';$('heard').textContent=m[e.error]||('Error de mic: '+e.error)};
  try{rec.start()}catch(e){}}
 $('go').onclick=async()=>{$('setup').style.display='none';$('live').style.display='flex';show();micOn=true;startRec();try{wake=await navigator.wakeLock.request('screen')}catch(e){}};
