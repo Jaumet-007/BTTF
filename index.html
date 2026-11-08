@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Subtítulos en vivo</title>
+<style>
+:root{--bg:#000;--fg:#c9a45c;--dim:#5b4a28;--ui:#2a2210;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#000;--fg:#c9a45c;--dim:#5b4a28;--ui:#2a2210}}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Georgia,serif;overflow:hidden}
+#setup{padding:24px;max-width:520px;margin:auto}
+h1{font-size:20px}p,label{font-size:15px;line-height:1.5;color:#a88a4c}
+button,select{background:var(--ui);color:var(--fg);border:1px solid var(--dim);border-radius:10px;padding:12px 16px;font-size:16px;margin:4px 4px 4px 0}
+#live{display:none;height:100%;flex-direction:column}
+#bar{display:flex;gap:6px;padding:6px;align-items:center;font-size:12px;color:var(--dim)}
+#bar button{padding:8px 10px;font-size:13px;margin:0}#bar span{flex:1;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#stage{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 18px;gap:14px;position:relative}
+.l{font-size:20px;color:var(--dim);line-height:1.3}.cur{font-size:30px;color:var(--fg);line-height:1.25;font-weight:bold}
+.who{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+#tap{position:absolute;inset:0;display:flex}#tap div{flex:1}
+#heard{font-size:11px;color:#3a2f16;padding:6px 12px;min-height:16px;font-family:monospace}
+</style></head><body>
+<div id="setup">
+<h1>Subtítulos en vivo</h1>
+<p>1. Carga el guion (archivo .json que te di). Se guarda solo en este móvil.</p>
+<button id="load">Cargar guion</button><input id="file" type="file" accept=".json,.txt" hidden>
+<p id="st"></p>
+<label>Idioma de la obra<br><select id="lang"><option value="en-GB">Inglés (UK)</option><option value="en-US">Inglés (US)</option></select></label>
+<p>2. Pon el brillo al mínimo y el móvil en silencio. Comprueba que el teatro permite su uso.</p>
+<button id="go" disabled>Empezar</button>
+</div>
+<div id="live">
+<div id="bar"><button id="mic">🎤 on</button><button id="jump">Ir a…</button><span id="pos"></span><button id="exit">✕</button></div>
+<div id="stage"><div class="l" id="p2"></div><div class="l" id="p1"></div><div><div class="who" id="who"></div><div class="cur" id="cur"></div></div><div class="l" id="n1"></div><div class="l" id="n2"></div>
+<div id="tap"><div id="back"></div><div id="fwd"></div></div></div>
+<div id="heard"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let S=[],L=[],cur=0,rec=null,micOn=true,wake=null;
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9' ]+/g,' ').replace(/'/g,'').split(/\s+/).filter(Boolean);
+function build(d){S=d;L=[];let who='',head='';d.forEach(([k,t])=>{if(k==='s')who=t;else if(k==='h')head=t;else L.push({t,who,head,w:norm(t)})});}
+function save(txt){try{localStorage.setItem('script',txt)}catch(e){}}
+function loadSaved(){try{return localStorage.getItem('script')}catch(e){return null}}
+function ready(){$('st').textContent=L.length+' líneas cargadas.';$('go').disabled=!L.length}
+function parseTxt(s){try{const d=JSON.parse(s);if(Array.isArray(d))return d}catch(e){}return s.split('\n').filter(x=>x.trim()).map(x=>['l',x.trim()])}
+$('load').onclick=()=>$('file').click();
+$('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;const s=await f.text();build(parseTxt(s));save(s);ready()};
+const sv=loadSaved();if(sv){build(parseTxt(sv));ready()}
+function show(){const g=i=>L[i]?L[i].t:'';$('p2').textContent=g(cur-2);$('p1').textContent=g(cur-1);$('cur').textContent=g(cur);$('who').textContent=L[cur]?L[cur].who:'';$('n1').textContent=g(cur+1);$('n2').textContent=g(cur+2);$('pos').textContent=(L[cur]?L[cur].head:'')+' · '+(cur+1)+'/'+L.length}
+const kc={};function key(w){return kc[w]||(kc[w]=w.replace(/ph/g,'f').replace(/ck|c(?![eiy])/g,'k').replace(/[aeiouy]+/g,(m,o)=>o?'':m[0]).replace(/(.)\1+/g,'$1'))}
+function lev1(a,b){if(a.length<b.length)[a,b]=[b,a];let i=0;while(i<b.length&&a[i]===b[i])i++;if(a.length===b.length)return a.slice(i+1)===b.slice(i+1);return a.slice(i+1)===b.slice(i)}
+function eq(a,b){if(a===b)return true;if(a.length<4||b.length<4)return false;if(key(a)===key(b))return true;return a.length>=5&&Math.abs(a.length-b.length)<=1&&lev1(a,b)}
+function score(tail,w){if(!w.length||!tail.length)return 0;let hit=0,bi=0,prev=-2;tail.forEach(x=>{const j=w.findIndex(y=>eq(x,y));if(j>=0){hit++;if(j===prev+1)bi++;prev=j}else prev=-2});return (hit+bi)/Math.max(3,Math.min(w.length,tail.length)+(tail.length>3?1:0))}
+let pend=-1,lastOk=Date.now();
+function match(text){const words=norm(text);if(words.length<2)return;const tail=words.slice(-9);const lost=Date.now()-lastOk>8000;const lo=Math.max(0,cur-(lost?60:2)),hi=Math.min(L.length,cur+(lost?150:30));let best=-1,bs=0;
+ for(let i=lo;i<hi;i++){let s=score(tail,L[i].w);if(i>=cur&&i<=cur+3)s*=1.15;if(s>bs){bs=s;best=i}}
+ if(best<0||bs<.6)return;
+ const step=best-cur;if(step>=0&&step<=4){cur=best;pend=-1;lastOk=Date.now();show();return}
+ if(pend>=0&&Math.abs(best-pend)<=2){cur=best;pend=-1;lastOk=Date.now();show()}else pend=best}
+function startRec(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){$('heard').textContent='Este navegador no soporta reconocimiento de voz: usa Chrome (Android) o Safari. Puedes avanzar tocando.';return}
+ rec=new R();rec.lang=$('lang').value;rec.continuous=true;rec.interimResults=true;
+ rec.onresult=e=>{let t='';for(let i=Math.max(0,e.results.length-3);i<e.results.length;i++)t+=' '+e.results[i][0].transcript;$('heard').textContent=t.trim().slice(-80);match(t)};
+ rec.onstart=()=>{$('mic').textContent='🎤 escuchando';$('heard').textContent='Escuchando… habla o pon audio cerca'};rec.onspeechstart=()=>{$('mic').textContent='🎤 oigo voz'};rec.onend=()=>{if(micOn)setTimeout(()=>{try{rec.start()}catch(e){}},300)};rec.onerror=e=>{const m={'not-allowed':'Micrófono BLOQUEADO. Abre esta página directamente en Chrome/Safari (no dentro de la app de Claude) y acepta el permiso.','service-not-allowed':'El navegador no permite reconocimiento de voz aquí. Abre la página en Chrome (Android) o Safari (iPhone).','no-speech':'No oigo nada: sube el volumen o acerca el móvil.','audio-capture':'No encuentro micrófono.','network':'Sin internet: el reconocimiento de voz lo necesita.'};if(e.error==='not-allowed'||e.error==='service-not-allowed')micOn=false;if(e.error!=='no-speech'&&e.error!=='aborted')$('mic').textContent='🎤 error';$('heard').textContent=m[e.error]||('Error de mic: '+e.error)};
+ try{rec.start()}catch(e){}}
+$('go').onclick=async()=>{$('setup').style.display='none';$('live').style.display='flex';show();micOn=true;startRec();try{wake=await navigator.wakeLock.request('screen')}catch(e){}};
+$('mic').onclick=()=>{micOn=!micOn;$('mic').textContent=micOn?'🎤 on':'🎤 off';if(micOn)startRec();else if(rec)rec.stop()};
+$('exit').onclick=()=>{micOn=false;if(rec)rec.stop();try{wake&&wake.release()}catch(e){};$('live').style.display='none';$('setup').style.display='block'};
+$('fwd').onclick=()=>{cur=Math.min(L.length-1,cur+1);show()};$('back').onclick=()=>{cur=Math.max(0,cur-1);show()};
+$('jump').onclick=()=>{const heads=[];L.forEach((l,i)=>{if(!heads.length||heads[heads.length-1][0]!==l.head)heads.push([l.head,i])});
+ const m=heads.map((h,i)=>(i+1)+'. '+h[0]).join('\n');const n=parseInt(prompt('Número de escena/canción:\n'+m),10);if(n&&heads[n-1]){cur=heads[n-1][1];show()}};
+</script></body></html>
